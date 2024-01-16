@@ -100,7 +100,7 @@ python early in phone._lint:
                 error("audio '{}' isn't loadable.".format(a))      
 
 python early in phone:
-    from renpy.store import cds_utils 
+    from renpy.store import cds_utils
 
     class _RawPhoneMessage(cds_utils.Statement):
         __slots__ = ("sender", "message", "delay")
@@ -722,7 +722,7 @@ python early in phone:
 
         if register: return _RawPhoneRegisterLabel(label)
 
-        delay = "None" if not ll.keyword("delay") else ll.require(ll.simple_expression)
+        delay = None if not ll.keyword("delay") else ll.require(ll.simple_expression)
         return _RawPhoneLabel(label, delay)
     
     def _parse_phone_date(ll, register):
