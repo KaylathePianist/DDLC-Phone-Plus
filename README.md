@@ -1,7 +1,7 @@
 Thank you for downloading the Phone+ Addon!
 
-Current Version: 1.1
-Better EMR Phone Equivalent Version: 3.2.2
+Current Version: 1.01
+Better EMR Phone Equivalent Version: 3.2.2 (Not released)
 
 This tool is an alternate version of Elckarow's "Better EMR Phone", meant to include extra screens and features that you might want to use in your mod.
 If you don't need these extra features, download the original phone.
@@ -21,7 +21,10 @@ New Features:
 
 If you use this in your project, credit Elckarow and CalebthePianist.
 
-REQUIRED CHANGES:
+INSTALL INSTRUCTIONS:
+- Put both .rpy files and the entire "Phone" folder inside your "mod_assets" folder.
+
+REQUIRED CHANGES IN YOUR MOD:
 - In screens.rpy, change the name of "screen confirm()" to "screen confirm_orig()"
 - Also in screens.rpy, find the statement "use quick_menu" in "screen say(who, what)", and replace it with "use quick_menu_phone".
 - Go to splash.rpy and find the label splashscreen. Add "$ in_splash = True" to the beginning and "$ in_splash = False" to the ending (right before the "return" function). 
