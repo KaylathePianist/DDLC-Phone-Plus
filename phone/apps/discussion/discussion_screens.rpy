@@ -1,5 +1,8 @@
-screen phone_discussion():
-    use _phone():
+screen phone_discussionex(xpos=0.15):
+    use phone_discussion(xpos)
+
+screen phone_discussion(xpos=0.15):
+    use _phone(xpos):
         side "t b c":
             use app_base(action=(SetField(phone.discussion, "_group_chat", None), Function(phone.discussion.audio_messages.reset))):
                 style_prefix "app_base"
@@ -78,12 +81,21 @@ screen _chat_textbox():
                                         None
                                     )
                 else:
-                    text _("Type a message.") color "#666"
-                # ugly ahh
+                    if persistent.darkmode:
+                        text _("Type a message.") color "#acacac"
+                    else:
+                        text _("Type a message.") color "#666"
+                    # ugly ahh
             else:
-                text _("Type a message.") color "#666"
+                if persistent.darkmode:
+                    text _("Type a message.") color "#acacac"
+                else:
+                    text _("Type a message.") color "#666"
 
-            text _("Send") color "#0094FF" xalign 1.0
+            if persistent.darkmode:
+                text _("Send") color "#00d61d" xalign 1.0
+            else:
+                text _("Send") color "#0094FF" xalign 1.0
             
 
 style phone_textbox_frame is empty:
@@ -101,7 +113,7 @@ style phone_textbox_text is empty:
     color "#000"
     line_leading 0
     line_spacing 0
-    font phone.asset("Aller_Rg.ttf")
+    font phone.config.basedir + "Aller_Rg.ttf"
     yalign 0.5
     layout "nobreak"
 
@@ -187,6 +199,16 @@ screen _chat_messages():
                                     idle p.data
                                     action Show("_phone_image", Dissolve(0.5), img=p.data)
 
+                        elif p.type == phone.discussion._PayloadTypes.STICKER:
+                            use _chat_message(p):
+                                imagebutton:
+                                    at transform:
+                                        xsize 1.0 subpixel True
+                                        fit "scale-down"
+
+                                    idle p.data
+                                    action NullAction()
+
                         elif p.type == phone.discussion._PayloadTypes.AUDIO:
                             use _chat_message(p):
                                 hbox style_prefix "phone_messages_audio":
@@ -194,7 +216,7 @@ screen _chat_messages():
                                         add DynamicDisplayable(phone.discussion.audio_messages.button_image, p=p)
                                         action Function(phone.discussion.audio_messages.play_audio, p, p.data),
                                     
-                                    add phone.asset("audio_message_wave_icon.png"):
+                                    add phone.config.basedir + "audio_message_wave_icon.png":
                                         at _fits(None), phone.discussion.audio_messages.AudioWave(p)
 
                         else:
@@ -228,6 +250,10 @@ screen _chat_messages():
                                 if phone.discussion._current_payload.type == phone.discussion._PayloadTypes.IMAGE:
                                     use _chat_message(phone.discussion._current_payload):
                                         text _("{u}{i}Loading Image...{i}{/u}")
+
+                                if phone.discussion._current_payload.type == phone.discussion._PayloadTypes.STICKER:
+                                    use _chat_message(phone.discussion._current_payload):
+                                        text _("{u}{i}Loading Sticker...{i}{/u}")
                                 
                                 elif phone.discussion._current_payload.type == phone.discussion._PayloadTypes.AUDIO:
                                     use _chat_message(phone.discussion._current_payload):
@@ -253,14 +279,48 @@ screen _chat_messages():
                         )
                         top_margin 5
 
+
+
 screen _phone_image(img):
+    style_prefix "phone_images"
     modal True
     add Solid("#000")
 
     add img:
         align (0.5, 0.5)
+    timer 0.01 action Show("image_buttons")
+
+    key "K_ESCAPE" action [SetVariable("phototaken", False), Hide("_phone_image", Dissolve(0.5)), Hide("image_buttons", Dissolve(0.5)), Hide("image_buttons2", Dissolve(0.5))]
+
+default phototaken = False
     
-    key ["mouseup_1", "mouseup_3"] action Hide("_phone_image", Dissolve(0.5))
+screen image_buttons():
+    style_prefix "phone_images"
+    textbutton _("Return"):
+        align (0.1, 0.9)
+        action [SetVariable("phototaken", False), Hide("_phone_image", Dissolve(0.5)), Hide("image_buttons", Dissolve(0.5)), Hide("image_buttons2", Dissolve(0.5))]
+    if not phototaken:
+        timer 0.01 action Show("image_buttons2")
+
+screen image_buttons2():
+    style_prefix "phone_images"
+    textbutton _("Save to Gallery"):
+        align (0.9, 0.9)
+        action [Hide("image_buttons2"), Show("image_save")]
+
+screen image_save():
+    timer 0.05 action Hide("image_buttons")
+    timer 0.1 action Function(camera_save_photo)
+    timer 0.15 action Show("image_buttons")
+    timer 0.17 action SetVariable("phototaken", True)
+    timer 0.2 action Hide("image_save")
+
+style phone_images is empty
+
+style phone_images_button_text:
+    font phone.config.basedir + "Aller_Rg.ttf"
+    outlines [(1, "#000000", 0, 0)]
+    size 38
 
 style phone_messages_button is empty:
     xalign 0.5
@@ -286,7 +346,7 @@ style phone_messages_text is empty:
     line_leading 0
     line_spacing 0
     layout "greedy"
-    font phone.asset("Aller_Rg.ttf")
+    font phone.config.basedir + "Aller_Rg.ttf"
     hyperlink_functions hyperlink_functions_style("phone_messages_text_hyperlink")
 
 style phone_messages_text_hyperlink is phone_messages_text:

@@ -1,8 +1,8 @@
 init -150 python in phone.emojis:
-    from renpy.store import store, Transform, phone
+    from renpy.store import store, Transform
     from store.phone import config
     _constant = True
-
+    
     import string
     _NOT_ALLOWED_CHARACTERS = set(string.punctuation.strip("_") + " ")
 
@@ -15,13 +15,13 @@ init -150 python in phone.emojis:
         
         global _emojis
         _emojis[name] = renpy.displayable(emoji)
-        
+    
     def get(name):
         return _emojis[name]
     
     def _emoji_tag(tag, name):
         return [
-            (renpy.TEXT_DISPLAYABLE, Transform(get(name), subpixel=True, ysize=1.0, fit="contain"))
+            (renpy.TEXT_DISPLAYABLE, Transform(get(name), subpixel=True, ysize=1.2, fit="contain"))
         ]
     
     store.config.self_closing_custom_text_tags["emoji"] = _emoji_tag
@@ -42,7 +42,7 @@ init 1000 python hide in phone.emojis:
         try:
             for emoji in os.listdir(phone.path_join(store.config.basedir, "game", emoji_base_path)):
                 stuff = emoji.split(".")
-                
+
                 if len(stuff) != 2: continue
                 name, extension = stuff
 

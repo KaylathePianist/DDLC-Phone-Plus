@@ -127,7 +127,7 @@ screen _phone_status_bar():
                     vbox:
                         use _phone_control_center_block(cols=2, rows=2, layout="grid"):
                             button at _fits_block align (0.5, 0.5):
-                                add phone.asset("airplane_icon.png")
+                                add phone.config.basedir + "airplane_icon.png"
                                 action If(
                                     phone.system.locked,
                                     NullAction(),
@@ -135,7 +135,7 @@ screen _phone_status_bar():
                                 )
 
                             button at _fits_block align (0.5, 0.5):
-                                add phone.asset("cellular_data_icon.png")
+                                add phone.config.basedir + "cellular_data_icon.png"
                                 action If(
                                     phone.system.locked,
                                     NullAction(),
@@ -144,11 +144,11 @@ screen _phone_status_bar():
                                         ToggleVariable("phone.system.cellular_data")
                                     )
                                 )
-                                selected_background Transform(phone.asset("circle.png"), matrixcolor=TintMatrix("#35C759"), subpixel=True, fit="contain")
+                                selected_background Transform(phone.config.basedir + "circle.png", matrixcolor=TintMatrix("#35C759"), subpixel=True, fit="contain")
                                 padding (90, 90)
 
                             button at _fits_block align (0.5, 0.5):
-                                add phone.asset("wifi_icon.png")
+                                add phone.config.basedir + "wifi_icon.png"
                                 action (
                                     If(
                                         phone.system.locked,
@@ -167,35 +167,40 @@ screen _phone_status_bar():
                                 )
                             
                             button at _fits_block align (0.5, 0.5):
-                                add phone.asset("bluetooth_icon.png")
-                                action If(
-                                    phone.system.locked,
-                                    NullAction(),
+                                add phone.config.basedir + "bluetooth_icon.png"
+                                action (
                                     If(
-                                        not phone.system.airplane_mode,
-                                        ToggleVariable("phone.system.bluetooth"),
-                                    )
+                                        phone.system.locked,
+                                        NullAction(),
+                                        If(
+                                            not phone.system.airplane_mode,
+                                            ToggleVariable("phone.system.bluetooth"),
+                                        )
+                                    ),
+                                    SelectedIf(phone.system.bluetooth)
                                 )
 
                         hbox:
                             use _phone_control_center_block():
                                 button at _fits_block align (0.5, 0.5):
                                     if phone.system.rotation_locked:
-                                        add phone.asset("rotation_locked_icon.png")
+                                        add phone.config.basedir + "rotation_locked_icon.png"
                                     else:
-                                        add phone.asset("rotation_unlocked_icon.png")
+                                        add phone.config.basedir + "rotation_unlocked_icon.png"
                                     action ToggleVariable("phone.system.rotation_locked")
 
                             use _phone_control_center_block():
                                 button at _fits_block align (0.5, 0.5):
-                                    add phone.asset("moon_icon.png")
-                                    action ToggleVariable("phone.system.dark_mode")
+                                    add phone.config.basedir + "moon_icon.png"
+                                    action If(persistent.darkmode, 
+                                        [SetLocalVariable("control_center", False), SetField(phone.system, "at_list", _phone_status_bar), ToggleField(persistent, "darkmode"), StylePreference("mode", "light")],
+                                        [SetLocalVariable("control_center", False), SetField(phone.system, "at_list", _phone_status_bar), StylePreference("mode", "dark"), ToggleField(persistent, "darkmode")])
                         
                         use _phone_control_center_block(cols=2):
                             button at _yfits_block:
                                 style "empty" align (0.5, 0.5)
                                 hbox style "empty" yfill True:
-                                    add phone.asset("screen_mirroring_icon.png") at _yfits(0.67) yalign 0.5
+                                    add phone.config.basedir + "screen_mirroring_icon.png" at _yfits(0.67) yalign 0.5
                                     null width 10
                                     text _("Screen\nMirroring") size 14 yalign 0.5
                                 
@@ -204,57 +209,85 @@ screen _phone_status_bar():
                         hbox:
                             use _phone_control_center_block():
                                 button at _fits_block align (0.5, 0.5):
-                                    add phone.asset("flashlight_icon.png")
+                                    add phone.config.basedir + "flashlight_icon.png"
                                     action ToggleVariable("phone.system.flashlight")
                                     padding (30, 30)
 
                             use _phone_control_center_block():
                                 button at _fits_block align (0.5, 0.5):
-                                    add phone.asset("timer_icon.png")
+                                    add phone.config.basedir + "timer_icon.png"
                                     action NullAction()
                                     padding (30, 30) hover_background None
 
                     vbox:
                         use _phone_control_center_block(cols=2, rows=2):
-                            text _("Music"):
-                                xalign 0.5 text_align 0.5 
-                                ycenter 0.27 size 18
+                            
+                            if not ost_info.get_current_soundtrack():
+                                text _("Music"):
+                                    xalign 0.5 text_align 0.5 
+                                    ycenter 0.27 size 17
+                            else:
+                                add "PhonePhonetitleName":
+                                    xalign 0.5
+                                    ycenter 0.22
+                                add "PhonePhoneauthorName":
+                                    xalign 0.5
+                                    ycenter 0.38
+
                             
                             hbox style "empty":
                                 xalign 0.5 ycenter 0.73
                                 spacing 10
 
                                 button style "empty" yalign 0.5:
-                                    text "▸▸":
-                                        at transform:
-                                            subpixel True alpha 0.5
-                                            xzoom -1
-                                        size 25
-                                    action NullAction()
+                                    if not ost_info.get_current_soundtrack():
+                                        action NullAction()
+                                        text "▸▸":
+                                            at transform:
+                                                subpixel True alpha 0.5
+                                                xzoom -1
+                                            size 25
+                                    else:
+                                        action Function(ost_controls.next_track, True)
+                                        text "▸▸":
+                                            at transform:
+                                                subpixel True alpha 1.0
+                                                xzoom -1
+                                            size 25
                                 
                                 imagebutton:
                                     xysize (50, 50)
-                                    selected_idle  Transform(phone.asset("play_icon.png"), fit="contain", subpixel=True, align=(0.5, 0.5))
-                                    selected_hover Transform(phone.asset("play_icon.png"), fit="contain", subpixel=True, align=(0.5, 0.5))
-
-                                    if renpy.music.get_playing("phone_music") is None:
-                                        idle Transform(phone.asset("play_icon.png"), fit="contain", subpixel=True, align=(0.5, 0.5))
-                                        action (NullAction(), SelectedIf(False))
+                                    if not ost_info.get_current_soundtrack():
+                                        idle Transform(phone.config.basedir + "play_icon.png", fit="contain", subpixel=True, align=(0.5, 0.5))
+                                        action (NullAction())
                                     else:
-                                        idle Transform(phone.asset("pause_icon.png"), fit="contain", subpixel=True, align=(0.5, 0.5))
-                                        action PauseAudio("phone_music", "toggle")
+                                        if ost_controls.pausedState:
+                                            idle Transform(phone.config.basedir + "play_icon.png", fit="contain", subpixel=True, align=(0.5, 0.5))
+                                            action [Function(ost_controls.play_music), ToggleVariable("musicispaused")]
+                                        elif not ost_controls.pausedState:
+                                            idle Transform(phone.config.basedir + "pause_icon.png", fit="contain", subpixel=True, align=(0.5, 0.5))
+                                            action [Function(ost_controls.pause_music), ToggleVariable("musicispaused")]
+
+
 
                                 button style "empty" yalign 0.5:
-                                    text "▸▸":
-                                        at transform:
-                                            subpixel True alpha 0.5
-                                        size 25
-                                    action NullAction()
+                                    if not ost_info.get_current_soundtrack():
+                                        action NullAction()
+                                        text "▸▸":
+                                            at transform:
+                                                subpixel True alpha 0.5
+                                            size 25
+                                    else:
+                                        action Function(ost_controls.next_track)
+                                        text "▸▸":
+                                            at transform:
+                                                subpixel True alpha 1.0
+                                            size 25
                             
                         hbox:
                             use _phone_control_center_block(rows=2):
                                 vbar value FieldValue(phone.system, "brightness", 1.0 - phone.config.lowest_brightness, offset=phone.config.lowest_brightness)
-                                add phone.asset("sun_icon.png"):
+                                add phone.config.basedir + "sun_icon.png":
                                     at transform:
                                         subpixel True xysize (0.5, 0.5) fit "contain"
                                         xalign 0.5 yalign 0.75
@@ -266,11 +299,11 @@ screen _phone_status_bar():
                                 add DynamicDisplayable(
                                     lambda st, at: (
                                         (
-                                            phone.asset("volume_icon_0.png")
+                                            phone.config.basedir + "volume_icon_0.png"
                                             if get_mixer("phone") == 0.0
-                                            else phone.asset("volume_icon_1.png")
+                                            else phone.config.basedir + "volume_icon_1.png"
                                             if get_mixer("phone") < 0.5
-                                            else phone.asset("volume_icon_2.png")
+                                            else phone.config.basedir + "volume_icon_2.png"
                                         ),
                                         0.1
                                     )
@@ -283,29 +316,23 @@ screen _phone_status_bar():
                         hbox:
                             use _phone_control_center_block():
                                 button at _fits_block align (0.5, 0.5):
-                                    add phone.asset("calculator_icon.png")
-                                    action NullAction()
-                                    padding (30, 30) hover_background None
+                                    add phone.config.basedir + "calculator_icon.png"
+                                    action [SetLocalVariable("control_center", False), SetField(phone.system, "at_list", _phone_status_bar), PhoneMenu("phone_calculator")]
+                                    padding (30, 30)
 
                             use _phone_control_center_block():
                                 button at _fits_block align (0.5, 0.5):
-                                    add phone.asset("camera_icon.png")
-                                    action NullAction()
-                                    padding (30, 30) hover_background None
+                                    add phone.config.basedir + "camera_icon.png"
+                                    action [SetLocalVariable("control_center", False), SetField(phone.system, "at_list", _phone_status_bar), PhoneMenu("phone_camera")]
+                                    padding (30, 30)
+
 
 screen _phone_control_center_block(cols=1, rows=1, layout="empty"):
     frame at (CurriedRoundedCorners(radius=gui.phone_control_center_block_rounded_corners_radius), Flatten):
-        # https://github.com/renpy/renpy/issues/4666
-        if is_renpy_version_or_above(7, 6, 1):
-            xysize (
-                absolute((gui.phone_control_center_block_size * cols) + (gui.phone_control_center_spacing * (cols - 1))),
-                absolute((gui.phone_control_center_block_size * rows) + (gui.phone_control_center_spacing * (rows - 1)))
-            )
-        else:
-            xysize (
-                int((gui.phone_control_center_block_size * cols) + (gui.phone_control_center_spacing * (cols - 1))),
-                int((gui.phone_control_center_block_size * rows) + (gui.phone_control_center_spacing * (rows - 1)))
-            )
+        xysize (
+            int((gui.phone_control_center_block_size * cols) + (gui.phone_control_center_spacing * (cols - 1))),
+            int((gui.phone_control_center_block_size * rows) + (gui.phone_control_center_spacing * (rows - 1)))
+        )
         style_prefix "_phone_control_center_block"
         
         if layout == "empty":
@@ -344,7 +371,7 @@ style _phone_status_bar_text is empty:
     color "#fff" outlines [ ]
     size 12 line_spacing 0 
     yalign 0.5
-    font phone.asset("Aller_Rg.ttf")
+    font phone.config.basedir + "Aller_Rg.ttf"
 
 transform _fits_block(factor=gui.phone_control_center_block_scaling_factor):
     _fits(absolute(gui.phone_control_center_block_size * factor))
@@ -380,14 +407,14 @@ style _phone_control_center_vbar is empty:
 style _phone_control_center_button is empty:
     padding (70, 70)
     background             None
-    hover_background       Transform(phone.asset("circle.png"), matrixcolor=TintMatrix("#5a5a5a"), subpixel=True, fit="contain")
-    selected_background    Transform(phone.asset("circle.png"), matrixcolor=TintMatrix("#007BFA"), subpixel=True, fit="contain")
-    insensitive_background Transform(phone.asset("circle.png"), matrixcolor=TintMatrix("#b1b1b1"), subpixel=True, fit="contain")
+    hover_background       Transform(phone.config.basedir + "circle.png", matrixcolor=TintMatrix("#5a5a5a"), subpixel=True, fit="contain")
+    selected_background    Transform(phone.config.basedir + "circle.png", matrixcolor=TintMatrix("#007BFA"), subpixel=True, fit="contain")
+    insensitive_background Transform(phone.config.basedir + "circle.png", matrixcolor=TintMatrix("#b1b1b1"), subpixel=True, fit="contain")
 
 style _phone_control_center_block_frame is empty:
     modal True
     background "#000000d0"
-
+    
 style _phone_control_center_block_base_box is empty:
     spacing int(gui.phone_control_center_spacing + (gui.phone_control_center_block_size * (1.0 - gui.phone_control_center_block_scaling_factor) * 0.5))
     align (0.5, 0.5)
@@ -397,3 +424,14 @@ style _phone_control_center_block_hbox is _phone_control_center_block_base_box:
 style _phone_control_center_block_vbox is _phone_control_center_block_base_box:
     xfill True
 style _phone_control_center_block_grid is _phone_control_center_block_base_box
+
+style _phone_control_center_text2 is _phone_control_center_text:
+    size 15
+    text_align 0.5
+
+style _phone_control_center_text3 is _phone_control_center_text:
+    size 14
+    text_align 0.5
+
+image PhonePhonetitleName = DynamicDisplayable(ost_info.phone_dynamic_title_text)
+image PhonePhoneauthorName = DynamicDisplayable(ost_info.phone_dynamic_author_text)

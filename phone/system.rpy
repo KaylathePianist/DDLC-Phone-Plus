@@ -42,20 +42,20 @@ init python in phone.system:
 
 # If any of these "If not `None`" values are `None`, they're taken from the player's device.
 default phone.system.date = None # If not `None`, a `datetime.datetime` object.
-default phone.system.battery_level = None # If not `None`, an integer.
-default phone.system.wifi = None # If not `None`, a boolean.
+default phone.system.battery_level = 83 # If not `None`, an integer.
+default phone.system.wifi = True # If not `None`, a boolean.
 
 # If true, some actions (notably in the status bar screen) won't do anything, preventing the player
 # from changing variables when they're not supposed to.
 default phone.system.locked = False
 
 default phone.system.airplane_mode = False
-default phone.system.bluetooth = False
+default phone.system.bluetooth = True
 default phone.system.rotation_locked = False
 default phone.system.cellular_data = False
 default phone.system.internet_connection = True # Phone wifi can be on, yet no internet connection.
 default phone.system.at_list = [] # A transform or list of transforms applied to the phone screen (overlay screens excluded).
-default phone.system.dark_mode = False # `False` by default ew
+default persistent.darkmode = False # `False` by default ew
 default phone.system.flashlight = False # should've named it "flashbang" smh
 
 # read only

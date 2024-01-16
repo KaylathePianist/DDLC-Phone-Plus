@@ -1,20 +1,45 @@
-A Ren'Py 7.4.9+ phone framework inspired by the phone used in the DDLC mod, Doki Doki Exit Music Redux.
+Thank you for downloading the Phone+ Addon!
 
-Credit elckarow (formerly Elckarow#8399) [Official documentation can be found here](https://better-emr-phone.readthedocs.io/en/latest/).
+Current Version: 1.1
+Better EMR Phone Equivalent Version: 3.2.2
 
-This framework was originally intended for DDLC modding. If you are not making a DDLC mod, you are not allowed to use MC's, Natsuki's, Sayori's, Monika's and Yuri's phone icon.
+This tool is an alternate version of Elckarow's "Better EMR Phone", meant to include extra screens and features that you might want to use in your mod.
+If you don't need these extra features, download the original phone.
+If you have any questions about the NEW features of the phone, message CalebthePianist on Discord.
+If you have any questions about the ORIGINAL phone, you can message Elckarow on Discord as well.
+To see a script that shows you most of the features automatically, call phone_discussion_test in your script.
 
-![](https://github.com/Elckarow/Better-EMR-Phone/assets/101005497/63bda61b-ea12-436f-bf00-078b6bc85851)
+New Features:
+- Stickers (images that can't be enlargened in a discussion, show them with *sticker "mc" "n1"* or similar)
+- Pre-defined emojis, including DDLC emotes
+- Port of the DDLC Music Player to the phone
+- Phone versions of the save, load, settings, achievements, gallery, about, and history screens
+- A calculator app, in case you'd ever need that
+- A camera app that takes photos and saves them to your device, as well as a screen to view the images
+- An alternate quick menu that allows constant and easy access to the base phone screen
+- A home button on the phone that takes you back to the base screen
 
-![](https://github.com/Elckarow/Better-EMR-Phone/assets/101005497/6f6f3f7d-1a74-40fd-9b24-2310221f381b)
+If you use this in your project, credit Elckarow and CalebthePianist.
 
-![](https://github.com/Elckarow/Better-EMR-Phone/assets/101005497/b7586874-8919-4888-a31d-53006e7426dd)
+REQUIRED CHANGES:
+- In screens.rpy, change the name of "screen confirm()" to "screen confirm_orig()"
+- Also in screens.rpy, find the statement "use quick_menu" in "screen say(who, what)", and replace it with "use quick_menu_phone".
+- Go to splash.rpy and find the label splashscreen. Add "$ in_splash = True" to the beginning and "$ in_splash = False" to the ending (right before the "return" function). 
+- Go to the label after_load in splash.rpy and add the following lines:
+    $ persistent.musicstarted = False
+    $ ost_controls.pause_music()
 
----
+That's it! Everything should work as intended. (I hope)
 
-# How to setup?
+CREDITS:
+Better EMR Phone © 2022-2024 Elckarow.
+Phone+ Addon Copyright © 2023-2024 CalebthePianist.
+Code adapted from the DDLC Mod Template 2.0 and DDLC Music Player (© 2019-2023 Bronya-Rand), Ren'Py Color Picker by Feniks, and screenshot code by bink on the Ren'Py Forums.
+DDLC emojis are by Team Salvato.
+Twemoji designs are licensed under CC-BY 4.0.
+Chibi stickers were created by Team Salvato and edited by Leomonade.
+Special thanks to M3rc, Keita, and Elckarow for assistance and help.
 
-- Download the latest release
-- Copy/Paste the `phone` folder, `01statements.rpy` and `phone_stuff.rpy` into your `game` folder.
-- Launch your game and call either the label `phone_discussion_test` or `phone_call_test`.
-- It works? Perfect!
+Official Better EMR Phone Documentation: https://better-emr-phone.readthedocs.io/en/latest
+
+Original download link: https://github.com/Elckarow/Better-EMR-Phone

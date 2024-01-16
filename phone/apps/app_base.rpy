@@ -5,7 +5,7 @@ screen app_base(action=NullAction()):
         ysize 50 + (gui.phone_status_bar_height * bool(phone.config.status_bar))
         top_padding 10 + (gui.phone_status_bar_height * bool(phone.config.status_bar))
         textbutton _("< Back"):
-            action (action, PhoneReturn())
+            action [PhoneReturn(), Function(ost_controls.get_music_pos), Function(phone.discussion.audio_messages.reset)]
             sensitive phone.menu
         
         transclude
@@ -24,7 +24,7 @@ style app_base_text is empty:
     outlines [ ]
     yalign 0.5
     color "#000" size 19
-    font phone.asset("Aller_Rg.ttf")
+    font phone.config.basedir + "Aller_Rg.ttf"
 
 style app_base_button is empty:
     yalign 0.5

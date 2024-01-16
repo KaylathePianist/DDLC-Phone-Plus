@@ -11,7 +11,7 @@ init -150 python in phone:
             return {k: f() for k, f in config.data.items()}
             
     renpy.music.register_channel("phone_audio_message", mixer="phone", loop=False)
-    renpy.music.register_channel("phone_music", mixer="phone", loop=True)
+    renpy.music.register_channel("phone_music", mixer="phone", loop=False)
 
     def set_current_screen(_screen_name):
         global _current_screen; _current_screen = _screen_name
@@ -23,7 +23,7 @@ init -150 python in phone:
     def format_date(month, day, year):
         date = datetime.date(month=month, day=day, year=year)
         return date.strftime(__(config.date_format))
-    
+
     import time
     def format_time(hour, minute):
         return time.strftime(__(config.time_format), time.gmtime(hour * 3600 + minute * 60))
@@ -42,10 +42,9 @@ default -150 phone.data = collections.defaultdict(
     phone._Data()
 )
 
-default -100 phone.menu = False
-
 init -100 python in phone:
     from store import Action, Return, With
+    import time
 
     class PhoneMenu(Action):
         def __init__(self, screen, *args, **kwargs):
@@ -105,6 +104,7 @@ init -100 python in phone:
     def PhoneReturn(value=None):
         return (Return(value), With(config.exit_transition if _stack_depth == 1 else config.intra_transition))
 
+
     store.PhoneReturn = PhoneReturn
 
     def show_layer_at(at_list, layer="master", camera=True, reset=False):
@@ -115,12 +115,12 @@ init -100 python in phone:
             at_list = [at_list]
         
         renpy.show_layer_at(at_list=at_list, layer=layer, camera=camera, reset=reset)
-    
+
     def short_name(s, length):
         s = renpy.substitute(s)
         if len(s) > length:
             s = s[:length - 3] + "..."
-        
+
         return s
 
     import os
@@ -134,9 +134,11 @@ init -100 python in phone:
 
 default -100 phone._stack_depth = 0
 default -100 phone._current_screen = None
+default -100 pressedhome = False
 
 # The base screen for all phone screens.
-screen _phone(xpos=0.5, xanchor=0.5, ypos=0.1, yanchor=0.1, horizontal=False):
+screen _phone(xpos=0.15, xanchor=0.5, ypos=0.14, yanchor=0.1, horizontal=False):
+    key "K_ESCAPE" action [PhoneReturn(), Function(ost_controls.get_music_pos), Function(phone.discussion.audio_messages.reset)]
     frame style "empty" modal True:
         at transform:
             subpixel True zoom gui.phone_zoom * (1.3 if horizontal else 1.0)
@@ -150,6 +152,15 @@ screen _phone(xpos=0.5, xanchor=0.5, ypos=0.1, yanchor=0.1, horizontal=False):
             rotate=-90 * horizontal,
             transform_anchor=horizontal
         )
+        if phone._stack_depth > 1:
+            imagebutton:
+                at transform:
+                    zoom 0.66
+                action [PhoneReturn(), SetVariable("pressedhome", True)]
+                idle phone.asset("phonehome.png")
+                hover phone.asset("phonehomehover.png")
+                xpos 0.4
+                ypos 1.008
 
         if not horizontal:
             padding gui.phone_margin
@@ -166,7 +177,10 @@ screen _phone(xpos=0.5, xanchor=0.5, ypos=0.1, yanchor=0.1, horizontal=False):
                 if phone.system.at_list: # https://github.com/renpy/renpy/issues/4628
                     at phone.system.at_list
 
-                add "#fff"
+                if persistent.darkmode:
+                    add "#202020"
+                else:
+                    add "#fff"
                 transclude
 
             fixed style "empty":
@@ -180,10 +194,28 @@ screen _phone(xpos=0.5, xanchor=0.5, ypos=0.1, yanchor=0.1, horizontal=False):
             add "#000":
                 at transform:
                     alpha alpha
-    
+
+    if pressedhome:
+        if phone._stack_depth > 1:
+            timer 0.0001 action PhoneReturn()
+        else:
+            timer 0.0001 action SetVariable("pressedhome", False)
+    if renpy.music.is_playing(channel='phone_music'):
+        timer 0.01 action Stop("music")
+    if not ost_info.get_current_soundtrack():
+        timer 0.1 action NullAction()
+    else:
+        if renpy.music.is_playing(channel='phone_music'):
+            timer 0.1 action Function(ost_controls.unget_music_pos)
+    timer 0.1 action Function(ost_song_assign.refresh_list)
     on "hide" action (
         SetVariable("phone.system.at_list", []),
     )
+
+init python:
+    def phone_home():
+        for i in range(2, phone._stack_depth):
+            PhoneReturn()
 
 init -500 python in phone:
     def _run_on_start(f, id):

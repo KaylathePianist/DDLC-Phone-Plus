@@ -24,8 +24,12 @@ screen phone_call_history():
                                 $ char = phone.character.character(entry.caller)
 
                                 if i != 0:
-                                    add Solid("#000"):
-                                        xysize (1.0, 1) nearest True 
+                                    if persistent.darkmode:
+                                        add Solid("#fff"):
+                                            xysize (1.0, 1) nearest True 
+                                    else:
+                                        add Solid("#000"):
+                                            xysize (1.0, 1) nearest True 
 
                                 button:
                                     action NullAction()
@@ -35,7 +39,7 @@ screen phone_call_history():
 
                                         fixed:
                                             hbox style "empty" yalign 0.2 spacing 10:
-                                                text phone.short_name(char.name, 26) 
+                                                text phone.short_name(char.name, 26)
                                                 if entry.duration is not None:
                                                     text "-"
                                                     text entry._duration_to_str()
@@ -55,5 +59,6 @@ style phone_call_history_hbox is phone_contacts_hbox
 style phone_call_history_text is phone_contacts_text:
     color "#000"
 
-style phone_call_history_empty is phone_contacts_no_friends
+style phone_call_history_empty is phone_contacts_no_friends_text
 style phone_call_history_date_text is phone_contacts_date_text
+

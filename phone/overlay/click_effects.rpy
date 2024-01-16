@@ -4,24 +4,53 @@ screen _phone_click_effects():
         phone_on_drag_effect,
         phone_on_release_effect
     )
-    add _effects
+    default _effects_dark = phone.click_effects.ClickEffects(
+        phone_on_click_effect_dark,
+        phone_on_drag_effect_dark,
+        phone_on_release_effect
+    )
+    if persistent.darkmode:
+        add _effects_dark
+    else:
+        add _effects
 
 define phone_click_uptime = 0.3
+
 image phone_click_effect:
-    phone.asset("circle.png")
+    phone.config.basedir + "circle.png"
     alpha 0.34 matrixcolor TintMatrix("#464646")
     subpixel True xysize (25, 25)
     easein (phone_click_uptime * 0.4) xysize (50, 50) alpha 0.7
     easeout_quad (phone_click_uptime * 0.6) xysize (0, 0) alpha 0.0
+
+image phone_click_effect_dark:
+    phone.config.basedir + "circle.png"
+    alpha 0.34 matrixcolor TintMatrix("#939393")
+    subpixel True xysize (25, 25)
+    easein (phone_click_uptime * 0.4) xysize (50, 50) alpha 0.7
+    easeout_quad (phone_click_uptime * 0.6) xysize (0, 0) alpha 0.0
+
 define phone_on_click_effect = ("phone_click_effect", phone_click_uptime)
 
+define phone_on_click_effect_dark = ("phone_click_effect_dark", phone_click_uptime)
+
 define phone_drag_uptime = 0.4
+
 image phone_drag_effect:
-    phone.asset("circle.png")
+    phone.config.basedir + "circle.png"
     alpha 0.17 matrixcolor TintMatrix("#464646")
     subpixel True xysize (20, 20)
     easeout phone_drag_uptime alpha 0.0 xysize (0, 0)
+
+image phone_drag_effect_dark:
+    phone.config.basedir + "circle.png"
+    alpha 0.17 matrixcolor TintMatrix("#939393")
+    subpixel True xysize (20, 20)
+    easeout phone_drag_uptime alpha 0.0 xysize (0, 0)
+
 define phone_on_drag_effect = ("phone_drag_effect", phone_drag_uptime)
+
+define phone_on_drag_effect_dark = ("phone_drag_effect_dark", phone_drag_uptime)
 
 define phone_on_release_effect = None
 

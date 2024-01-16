@@ -20,7 +20,7 @@ screen _phone_message_typing(sender):
                 text "⚫" at _phone_message_typing(0.4)
         
         text __("{short_name} is typing...").format(short_name=phone.short_name(sender.name, 9)) style "phone_typing_istyping" yalign 0.5
-
+        
 style phone_typing_hbox is empty:
     spacing 3
 
@@ -31,8 +31,8 @@ style phone_typing_text is phone_messages_text:
     color "#000"
     font "DejaVuSans.ttf"
 
-style phone_typing_istyping is empty:
+style phone_typing_istyping_text is empty:
     color "#626262"
     outlines [ ]
     size 16
-    font phone.asset("Aller_Rg.ttf")
+    font phone.config.basedir + "Aller_Rg.ttf"

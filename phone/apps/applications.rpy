@@ -12,7 +12,7 @@ init -100 python in phone.application:
             xysize=(gui.phone_application_icon_size, gui.phone_application_icon_size),
             **kwargs
         )
-    
+
     def GradientBackground(start_color, end_color, theta=0):
         return IconBackground(Gradient(start_color, end_color, theta))
     
@@ -123,6 +123,9 @@ init -100 python in phone.application:
         d["max"] = 0
 
 screen phone():
+    if phone.system.at_list == "_phone_status_bar":
+        if musicispaused:
+            timer 0.001 action [Function(ost_controls.pause_music)]
     default current_page = 0
     default coords_to_move = None
 
@@ -134,7 +137,7 @@ screen phone():
         current_page = min(current_page, max_page)
 
     fixed style_prefix "phone_main":
-        button style "empty" xysize (1.0, 1.0) action If(coords_to_move is None, PhoneReturn(), SetScreenVariable("coords_to_move", None))
+        button style "empty" xysize (1.0, 1.0) action If(coords_to_move is None, [PhoneReturn(), Function(ost_controls.get_music_pos)], SetScreenVariable("coords_to_move", None))
 
         if coords_to_move is not None:
             key "K_ESCAPE" action SetScreenVariable("coords_to_move", None)
@@ -142,27 +145,32 @@ screen phone():
         if current_page != 0:
             button:
                 at transform:
-                    subpixel True anchor (0.5, 0.5) pos (0.35, 0.45)
+                    subpixel True anchor (0.5, 0.5) pos (0.012, 0.45)
                     rotate -90 transform_anchor True
                     xysize (150, 30) matrixcolor TintMatrix("#474343ee")
                 action SetScreenVariable("current_page", current_page - 1)
-                add phone.asset("arrow_icon.png")
+                add phone.config.basedir + "arrow_icon.png"
 
         if current_page != max_page:
             button:
                 at transform:
-                    subpixel True anchor (0.5, 0.5) pos (0.65, 0.45)
+                    subpixel True anchor (0.5, 0.5) pos (0.288, 0.45)
                     rotate 90 transform_anchor True
                     xysize (150, 30) matrixcolor TintMatrix("#474343ee")
                 action SetScreenVariable("current_page", current_page + 1)
-                add phone.asset("arrow_icon.png")
+                add phone.config.basedir + "arrow_icon.png"
 
     use _phone():
         style_prefix "phone_main"
 
-        add (phone.data[store.pov_key]["background_image"] or Gradient("#0a8be7", "#32F5EE")):
-            at transform:
-                ease 0.2 blur (0.0 if coords_to_move is None else 10.0)
+        if persistent.darkmode:
+            add (phone.data[store.pov_key]["background_image"] or Gradient("#00355a", "#004b48")):
+                at transform:
+                    ease 0.2 blur (0.0 if coords_to_move is None else 10.0)
+        else:
+            add (phone.data[store.pov_key]["background_image"] or Gradient("#0a8be7", "#32F5EE")):
+                at transform:
+                    ease 0.2 blur (0.0 if coords_to_move is None else 10.0)
 
         side "t b":
             frame:
@@ -177,13 +185,20 @@ screen phone():
             vbox:
                 hbox xalign 0.5 spacing 13:
                     for i in range(max_page + 1):
-                        add phone.asset("circle.png"):
-                            at transform:
-                                subpixel True xysize (10, 10)
-                                matrixcolor TintMatrix("#4e4e4e")
-                                alpha (0.8 if i == current_page else 0.4)
+                        if persistent.darkmode:
+                            add phone.config.basedir + "circle.png":
+                                at transform:
+                                    subpixel True xysize (10, 10)
+                                    matrixcolor TintMatrix("#c7c7c7")
+                                    alpha (0.8 if i == current_page else 0.4)
+                        else:
+                            add phone.config.basedir + "circle.png":
+                                at transform:
+                                    subpixel True xysize (10, 10)
+                                    matrixcolor TintMatrix("#4e4e4e")
+                                    alpha (0.8 if i == current_page else 0.4)
 
-                frame style "phone_main_frame_bottom":
+                frame style "phone_main_frame_bottom_frame":
                     hbox xalign 0.5:
                         for by, b_app_row in enumerate(phone.application.get_app_page(None)):
                             for bx, b_app in enumerate(b_app_row):
@@ -214,7 +229,7 @@ style phone_main_frame is empty:
     bottom_padding gui.phone_application_frame_padding
     xfill True
 
-style phone_main_frame_bottom is phone_main_frame:
+style phone_main_frame_bottom_frame is phone_main_frame:
     top_padding gui.phone_application_frame_padding
     background "#ffffff62"
     
@@ -285,7 +300,7 @@ style _phone_application_button_vbox is empty:
 style _phone_application_button_text is empty:
     text_align 0.5 xalign 0.5
     outlines [ ] color "#000"
-    size 12 font phone.asset("Metropolis-Regular.otf")
+    size 12 font phone.config.basedir + "Metropolis-Regular.otf"
     line_spacing 0
 
 style _phone_application_button_fixed is empty:
@@ -293,9 +308,9 @@ style _phone_application_button_fixed is empty:
 
 init -10 python in phone.application:
     from store import PhoneMenu, ShowMenu, TintMatrix
-
+    
     message_app = Application(
-        _("message"),
+        _("Messages"),
         Icon(
             config.basedir + "message_icon.png",
             0.9,
@@ -305,7 +320,7 @@ init -10 python in phone.application:
     )
 
     calendar_app = Application(
-        _("calendar"),
+        _("Calendar"),
         Icon( # cancer
             Fixed(
                 Transform(
@@ -335,7 +350,7 @@ init -10 python in phone.application:
     )
 
     call_history_app = Application(
-        _("call"),
+        _("Call"),
         Icon(
             config.basedir + "call_icon.png",
             0.9,
@@ -343,5 +358,103 @@ init -10 python in phone.application:
         ),
         PhoneMenu("phone_call_history")
     )
+
+    camera_app = Application(
+        _("Camera"),
+        Icon(
+            config.basedir + "camera_icon.png",
+            0.9,
+            GradientBackground("#4b4b4b", "#000000")
+        ),
+        PhoneMenu("phone_camera")
+    )
     
-    
+    photos_app = Application(
+        _("Photos"),
+        Icon(
+            config.basedir + "photos_icon.png",
+            0.9,
+            GradientBackground("#5b72f6", "#2a4aff")
+        ),
+        PhoneMenu("photos_gallery")
+    )
+
+    calculator_app = Application(
+        _("Calculator"),
+        Icon(
+            config.basedir + "calculator_icon.png",
+            0.9,
+            GradientBackground("#4b4b4b", "#000000")
+        ),
+        PhoneMenu("phone_calculator")
+    )
+
+    music_app = Application(
+        _("Music"),
+        Icon(
+            config.basedir + "music_icon.png",
+            0.9,
+            GradientBackground("#6beeff", "#00e1ff")
+        ),
+        PhoneMenu("phone_music")
+    )
+
+    awards_app = Application(
+        _("Awards"),
+        Icon(
+            config.basedir + "awards_icon.png",
+            0.9,
+            GradientBackground("#ff5185", "#ff004c")
+        ),
+        PhoneMenu("phone_achievements")
+    )
+
+    about_app = Application(
+        _("About"),
+        Icon(
+            config.basedir + "about_icon.png",
+            0.9,
+            GradientBackground("#ff993a", "#ff7b00")
+        ),
+        PhoneMenu("phone_info")
+    )
+
+    settings_app = Application(
+        _("Settings"),
+        Icon(
+            config.basedir + "quick_menu_settings_selected.png",
+            0.9,
+            GradientBackground("#b6b6b6", "#696969")
+        ),
+        PhoneMenu("phone_settings")
+    )
+
+    dialogue_history_app = Application(
+        _("History"),
+        Icon(
+            config.basedir + "quick_menu_history_selected.png",
+            0.9,
+            GradientBackground("#b6b6b6", "#696969")
+        ),
+        PhoneMenu("phone_dialogue_history")
+    )
+
+    save_app = Application(
+        _("Save"),
+        Icon(
+            config.basedir + "quick_menu_save_selected.png",
+            0.9,
+            GradientBackground("#b6b6b6", "#696969")
+        ),
+        PhoneMenu("phone_savegame")
+    )
+
+    load_app = Application(
+        _("Load"),
+        Icon(
+            config.basedir + "quick_menu_load_selected.png",
+            0.9,
+            GradientBackground("#b6b6b6", "#696969")
+        ),
+        PhoneMenu("phone_loadgame")
+    )

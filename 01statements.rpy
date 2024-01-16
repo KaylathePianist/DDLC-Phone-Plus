@@ -84,6 +84,14 @@ python early in phone._lint:
                 renpy.displayable(d)
             except Exception:
                 error("'{}' is not a displayable.".format(d))
+        
+    def sticker(s, log=True):
+        s = eval(s, log)
+        if s is not cant_evaluate:
+            try:
+                renpy.displayable(s)
+            except Exception:
+                error("'{}' is not a displayable.".format(s))
     
     def audio(a, log=True):
         a = eval(a, log)
@@ -92,7 +100,7 @@ python early in phone._lint:
                 error("audio '{}' isn't loadable.".format(a))      
 
 python early in phone:
-    from renpy.store import cds_utils
+    from renpy.store import cds_utils 
 
     class _RawPhoneMessage(cds_utils.Statement):
         __slots__ = ("sender", "message", "delay")
@@ -140,6 +148,30 @@ python early in phone:
             _lint.image(self.image)    
             _lint.eval(self.time)
             _lint.eval(self.delay)    
+
+    class _RawPhoneSticker(cds_utils.Statement):
+        __slots__ = ("sender", "sticker", "time", "delay")
+
+        def __init__(self, sender, sticker, time, delay):
+            self.sender = sender
+            self.sticker = sticker
+            self.time = time
+            self.delay = delay
+        
+        def execute(self):
+            globals = store.__dict__
+            discussion.sticker(
+                eval(self.sender, globals),
+                eval(self.sticker, globals),
+                eval(self.time, globals),
+                eval(self.delay, globals)
+            )
+        
+        def lint(self):
+            _lint.character(self.sender)
+            _lint.sticker(self.sticker)    
+            _lint.eval(self.time)
+            _lint.eval(self.delay)   
 
     class _RawPhoneLabel(cds_utils.Statement):
         __slots__ = ("label", "delay")
@@ -465,6 +497,25 @@ python early in phone:
             _lint.character(self.sender)
             _lint.image(self.image)
     
+    class _RawPhoneRegisterSticker(cds_utils.Statement):
+        __slots__ = ("sender", "sticker")
+
+        def __init__(self, sender, sticker):
+            self.sender = sender
+            self.sticker = sticker
+
+        def execute(self, gc):
+            globals = store.__dict__
+            discussion.register_sticker(
+                gc,
+                eval(self.sender, globals),
+                eval(self.sticker, globals)
+            )
+        
+        def lint(self):
+            _lint.character(self.sender)
+            _lint.sticker(self.sticker)
+
     class _RawPhoneRegisterLabel(cds_utils.Statement):
         __slots__ = ("label",)
 
@@ -632,13 +683,46 @@ python early in phone:
         if time is None: time = "2.0"
         if delay is None: delay = "None"
         return _RawPhoneImage(sender, image, time, delay)
+
+    def _parse_phone_sticker(ll, register):
+        sender = ll.require(ll.simple_expression)
+        sticker = ll.require(ll.simple_expression)
+
+        if register: return _RawPhoneRegisterSticker(sender, sticker)
+
+        time = None
+        delay = None
+
+        while not ll.eol():
+            state = ll.checkpoint()
+            kwarg = ll.require(ll.word)
+
+            if kwarg == "time":
+                if time is not None:
+                    ll.revert(state)
+                    ll.error("'time' property already given")
+                time = ll.require(ll.simple_expression)
+            
+            elif kwarg == "delay":
+                if delay is not None:
+                    ll.revert(state)
+                    ll.error("'delay' property already given")
+                delay = ll.require(ll.simple_expression)
+            
+            else:
+                ll.revert(state)
+                ll.error("unknown property '{}'".format(kwarg))
+
+        if time is None: time = "2.0"
+        if delay is None: delay = "None"
+        return _RawPhoneSticker(sender, sticker, time, delay)
     
     def _parse_phone_label(ll, register):
         label = ll.require(ll.string)
 
         if register: return _RawPhoneRegisterLabel(label)
 
-        delay = None if not ll.keyword("delay") else ll.require(ll.simple_expression)
+        delay = "None" if not ll.keyword("delay") else ll.require(ll.simple_expression)
         return _RawPhoneLabel(label, delay)
     
     def _parse_phone_date(ll, register):
@@ -860,6 +944,9 @@ python early in phone:
                 if ll.keyword("image"):
                     statement = _parse_phone_image(ll, False)
 
+                elif ll.keyword("sticker"):
+                    statement = _parse_phone_sticker(ll, False)
+
                 elif ll.keyword("label"):
                     statement = _parse_phone_label(ll, False)
 
@@ -904,6 +991,9 @@ python early in phone:
             while ll.advance():
                 if ll.keyword("image"):
                     statement = _parse_phone_image(ll, True)
+
+                elif ll.keyword("sticker"):
+                    statement = _parse_phone_sticker(ll, True)
 
                 elif ll.keyword("label"):
                     statement = _parse_phone_label(ll, True)

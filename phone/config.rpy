@@ -3,7 +3,7 @@ python early in phone.config:
     _constant = True
 
     # Where the assets are located.
-    basedir = "phone/assets/"
+    basedir = "mod_assets/phone/assets/"
 
     # A list of screen names. Those screens are shown above the phone screens (but still inside the phone).
     overlay_screens = [ ]
@@ -116,7 +116,7 @@ python early in phone.config:
         "ysize": 1.0,
         "fit": "contain"
     }
-    
+
     # How many messages we display at the same time.
     messages_displayed = 100
 
@@ -140,7 +140,7 @@ python early in phone.config:
 
     # The default value of the `delay` property for the `time` and `label` discussion statements.
     default_label_delay = 0.5
-
+    
 python early: # prevent "default"
     config.special_namespaces["store.phone.config"] = type(config.special_namespaces["store.config"])(phone.config, "phone.config")
 

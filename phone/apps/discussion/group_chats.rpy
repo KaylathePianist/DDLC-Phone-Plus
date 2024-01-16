@@ -4,7 +4,7 @@ init -100 python in phone.group_chat:
 
     config = phone.config
 
-    class GroupChat(object):    
+    class GroupChat(object):   
         transient = False
         _unread = True
         
@@ -25,23 +25,23 @@ init -100 python in phone.group_chat:
             
             if key is None: raise ValueError("key may not be 'None'")
             self.key = key
-
+        
             # deprecated
             self.short_name = name
-        
+
         @property
         def unread(self):
             if not config.unread_group_chat_pov:
                 return self._unread
             return phone.data[store.pov_key]["group_chat_unread_pov"].setdefault(self.key, True)
-        
+
         @unread.setter
         def unread(self, v):
             if not config.unread_group_chat_pov:
                 self._unread = v
             else:
                 phone.data[store.pov_key]["group_chat_unread_pov"][self.key] = v
-                
+        
         def add_character(self, char):
             if isinstance(char, list):
                 for c in char:
@@ -68,7 +68,7 @@ init -100 python in phone.group_chat:
 
             rv = 0
             for p in self._payloads:
-                if (p.type in (_PayloadTypes.TEXT, _PayloadTypes.IMAGE, _PayloadTypes.AUDIO, _PayloadTypes.VIDEO)
+                if (p.type in (_PayloadTypes.TEXT, _PayloadTypes.IMAGE, _PayloadTypes.STICKER, _PayloadTypes.AUDIO, _PayloadTypes.VIDEO)
                     and (key is None or p.source == key)
                 ): rv += 1
             return rv
@@ -83,7 +83,7 @@ init -100 python in phone.group_chat:
         def _can_load_more(self):
             if not self._payloads: return False         
             return self._get_messages()[0] is not self._payloads[0]
-        
+
         def _get_messages(self):
             messages_displayed = config.messages_displayed
 
@@ -97,7 +97,7 @@ init -100 python in phone.group_chat:
                 max_x += remaining
 
             return self._payloads[l-max_x:l-min_x]
-        
+
         @property
         def _date_text(self):
             date = self.date

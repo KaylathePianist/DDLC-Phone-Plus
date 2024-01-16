@@ -10,7 +10,7 @@ screen phone_contacts():
                 text _("Messages") xalign 0.5 text_align 0.5
 
             if not group_chats:
-                text _("No group chats") style "phone_contacts_no_friends" align (0.5, 0.05)
+                text _("No group chats") style "phone_contacts_no_friends_text" align (0.5, 0.05)
             
             else:
                 viewport:
@@ -24,8 +24,12 @@ screen phone_contacts():
                                 $ group_chat = phone.group_chat.group_chat(gc)
 
                                 if i != 0:
-                                    add Solid("#000"):
-                                        xysize (1.0, 1) nearest True 
+                                    if persistent.darkmode:
+                                        add Solid("#fff"):
+                                            xysize (1.0, 1) nearest True 
+                                    else:
+                                        add Solid("#000"):
+                                            xysize (1.0, 1) nearest True 
 
                                 button:
                                     action (
@@ -34,13 +38,21 @@ screen phone_contacts():
                                         PhoneMenu("phone_discussion")
                                     )
 
+                                    $ sender, message = group_chat._get_display_last_message()
+
                                     hbox:
                                         add group_chat.icon at _fits(46) yalign 0.5
 
                                         fixed:
                                             text phone.short_name(group_chat.name, 26) yalign 0.2:
                                                 if group_chat.unread:
-                                                    color "#000"
+                                                    if persistent.darkmode:
+                                                        color "#fff"
+                                                    else:
+                                                        color "#000"
+                                                
+                                            text _("The [group_chat._date_text] at [group_chat._hour_text]"):
+                                                style "phone_contacts_date_text" yalign 1.0
 
                                             text (
                                                 _("The [group_chat._date_text] at [group_chat._hour_text]")
@@ -73,9 +85,9 @@ style phone_contacts_text is empty:
     outlines [ ]
     color "#525252"
     size 18
-    font phone.asset("Aller_Rg.ttf")
+    font phone.config.basedir + "Aller_Rg.ttf"
 
-style phone_contacts_no_friends is phone_contacts_text:
+style phone_contacts_no_friends_text is phone_contacts_text:
     color "#000"
     size 20
 

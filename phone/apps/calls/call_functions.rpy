@@ -24,7 +24,7 @@ init -100 python in phone.calls:
 
         global _nosave
         _nosave = bool(nosave)
-    
+
     def end_call():
         global _current_caller
         if _current_caller is None:
@@ -40,7 +40,7 @@ init -100 python in phone.calls:
 
         show_layer_at([], reset=True)
         renpy.hide_screen("phone_call")
-        if store.is_renpy_version_or_above(7, 5, 0):
+        if store.is_renpy_version_or_above(7, 6, 0):
             renpy.scene(config.video_call_layer)
         renpy.with_statement(config.exit_transition)
 
@@ -66,7 +66,7 @@ init -100 python in phone.calls:
         global _nosave
         if _nosave is not None and not _nosave:
             _nosave = None
-            
+
             ch1 = phone.data[key1]["call_history"]
             ch1.append(_CallEntry(key2, date, duration))
 

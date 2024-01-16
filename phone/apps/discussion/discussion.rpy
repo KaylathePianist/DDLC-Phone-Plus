@@ -2,6 +2,7 @@ init -100 python in phone.discussion:
     from renpy import store
     from store import ui, pause, phone
     from store.phone import config, show_layer_at, set_current_screen, format_date, format_time, emojis
+    from store.phone.discussion import audio_messages
     import datetime
 
     def sort_messages(key):
@@ -32,9 +33,9 @@ init -100 python in phone.discussion:
 
         _yadjustment.value = float("inf")
 
-        set_current_screen("phone_discussion")
-        show_layer_at("phone_discussion")
-        renpy.show_screen("phone_discussion")
+        set_current_screen("phone_discussionex")
+        show_layer_at("phone_discussionex")
+        renpy.show_screen("phone_discussionex", xpos=0.5)
         renpy.with_statement(config.enter_transition)
 
         store._window_auto = True
@@ -52,9 +53,9 @@ init -100 python in phone.discussion:
             _group_chat.clear()
             
         _group_chat = None
-
+        phone.discussion.audio_messages.reset()
         show_layer_at([], reset=True)
-        renpy.hide_screen("phone_discussion")
+        renpy.hide_screen("phone_discussionex")
         renpy.with_statement(config.exit_transition)
         
         set_current_screen(None)
@@ -161,6 +162,27 @@ init -100 python in phone.discussion:
         group._save_payload(p)
         _run_callbacks(group, "save", p)
     
+    def sticker(sender, sticker, time=2.0, delay=None):
+        dc = _discussion_coroutine()
+        dc.send(None)
+
+        sender = character(sender)
+
+        dc.send(_Payload(sender.key, sticker, STICKER))
+        dc.send(time)
+
+        register_sticker(_group_chat, sender, sticker)
+        
+        dc.send(delay)
+    
+    def register_sticker(group, sender, sticker):
+        group = group_chat(group)
+        sender = character(sender)
+
+        p = _Payload(sender.key, sticker, STICKER)
+        group._save_payload(p)
+        _run_callbacks(group, "save", p)
+
     def label(label, delay=0.5):
         dc = _discussion_coroutine()
         dc.send(None)
@@ -292,17 +314,19 @@ python early in phone.discussion._PayloadTypes: # fake enum because of the modul
     TYPING = 0
     TEXT = 1
     IMAGE = 2
-    LABEL = 3
-    DATE = 4
-    MENU = 5
-    AUDIO = 6
-    VIDEO = 7
+    STICKER = 3
+    LABEL = 4
+    DATE = 5
+    MENU = 6
+    AUDIO = 7
+    VIDEO = 8
 
-    ALL = (TYPING, TEXT, IMAGE, LABEL, DATE, MENU, AUDIO, VIDEO)
+    ALL = (TYPING, TEXT, IMAGE, STICKER, LABEL, DATE, MENU, AUDIO, VIDEO)
 
     renpy.store.phone.discussion.TYPING = TYPING
     renpy.store.phone.discussion.TEXT = TEXT
     renpy.store.phone.discussion.IMAGE = IMAGE
+    renpy.store.phone.discussion.STICKER = STICKER
     renpy.store.phone.discussion.LABEL = LABEL
     renpy.store.phone.discussion.DATE = DATE
     renpy.store.phone.discussion.MENU = MENU
