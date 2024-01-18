@@ -127,8 +127,14 @@ screen quick_menu_phone():
         else:
             timer 0.02 action Function(ost_controls.pause_music)
             timer 0.02 action PauseAudio("music", False)
+    if persistent.phonelocked:
+        timer 0.01 action [SetField(persistent, "phonelocked", False), SetVariable("phonelocked1", True)]
+    if persistent.phoneunlocked:
+        timer 0.01 action [SetField(persistent, "phoneunlocked", False), SetVariable("phoneunlocked1", True)]
 
 default in_splash = False
+default phoneunlocked1 = False
+default phonelocked1 = False
 
 transform phonehover:
     zoom 0.5

@@ -140,6 +140,15 @@ python early in phone.config:
 
     # The default value of the `delay` property for the `time` and `label` discussion statements.
     default_label_delay = 0.5
+
+    # If set to true, the phone will be locked with a passcode.
+    haslockscreen = False
+
+    # The correct passcode for the lock screen.
+    passcode = "000000"
+
+    # The number of times a passcode can be entered incorrectly before the phone locks itself. If set to zero, no limit.
+    pass_attempts = 0
     
 python early: # prevent "default"
     config.special_namespaces["store.phone.config"] = type(config.special_namespaces["store.config"])(phone.config, "phone.config")

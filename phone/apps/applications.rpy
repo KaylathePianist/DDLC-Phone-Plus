@@ -159,50 +159,53 @@ screen phone():
                     xysize (150, 30) matrixcolor TintMatrix("#474343ee")
                 action SetScreenVariable("current_page", current_page + 1)
                 add phone.config.basedir + "arrow_icon.png"
+    if phone.config.haslockscreen == True and phoneunlocked1 == False:
+        use _phone():
+            use phone_lock_screen()
+    else:
+        use _phone():
+            style_prefix "phone_main"
 
-    use _phone():
-        style_prefix "phone_main"
+            if persistent.darkmode:
+                add (phone.data[store.pov_key]["background_image"] or Gradient("#00355a", "#004b48")):
+                    at transform:
+                        ease 0.2 blur (0.0 if coords_to_move is None else 10.0)
+            else:
+                add (phone.data[store.pov_key]["background_image"] or Gradient("#0a8be7", "#32F5EE")):
+                    at transform:
+                        ease 0.2 blur (0.0 if coords_to_move is None else 10.0)
 
-        if persistent.darkmode:
-            add (phone.data[store.pov_key]["background_image"] or Gradient("#00355a", "#004b48")):
-                at transform:
-                    ease 0.2 blur (0.0 if coords_to_move is None else 10.0)
-        else:
-            add (phone.data[store.pov_key]["background_image"] or Gradient("#0a8be7", "#32F5EE")):
-                at transform:
-                    ease 0.2 blur (0.0 if coords_to_move is None else 10.0)
+            side "t b":
+                frame:
+                    top_padding (int(gui.phone_application_frame_padding * 0.5) + gui.phone_status_bar_height if phone.config.status_bar else gui.phone_application_frame_padding)
 
-        side "t b":
-            frame:
-                top_padding (int(gui.phone_application_frame_padding * 0.5) + gui.phone_status_bar_height if phone.config.status_bar else gui.phone_application_frame_padding)
+                    grid phone.application._cols phone.application._rows:
+                        xalign 0.5
+                        for y, app_row in enumerate(phone.application.get_app_page(current_page)):
+                            for x, app in enumerate(app_row):
+                                use _phone_application_button(app, (current_page, x, y), coords_to_move)
 
-                grid phone.application._cols phone.application._rows:
-                    xalign 0.5
-                    for y, app_row in enumerate(phone.application.get_app_page(current_page)):
-                        for x, app in enumerate(app_row):
-                            use _phone_application_button(app, (current_page, x, y), coords_to_move)
+                vbox:
+                    hbox xalign 0.5 spacing 13:
+                        for i in range(max_page + 1):
+                            if persistent.darkmode:
+                                add phone.config.basedir + "circle.png":
+                                    at transform:
+                                        subpixel True xysize (10, 10)
+                                        matrixcolor TintMatrix("#c7c7c7")
+                                        alpha (0.8 if i == current_page else 0.4)
+                            else:
+                                add phone.config.basedir + "circle.png":
+                                    at transform:
+                                        subpixel True xysize (10, 10)
+                                        matrixcolor TintMatrix("#4e4e4e")
+                                        alpha (0.8 if i == current_page else 0.4)
 
-            vbox:
-                hbox xalign 0.5 spacing 13:
-                    for i in range(max_page + 1):
-                        if persistent.darkmode:
-                            add phone.config.basedir + "circle.png":
-                                at transform:
-                                    subpixel True xysize (10, 10)
-                                    matrixcolor TintMatrix("#c7c7c7")
-                                    alpha (0.8 if i == current_page else 0.4)
-                        else:
-                            add phone.config.basedir + "circle.png":
-                                at transform:
-                                    subpixel True xysize (10, 10)
-                                    matrixcolor TintMatrix("#4e4e4e")
-                                    alpha (0.8 if i == current_page else 0.4)
-
-                frame style "phone_main_frame_bottom_frame":
-                    hbox xalign 0.5:
-                        for by, b_app_row in enumerate(phone.application.get_app_page(None)):
-                            for bx, b_app in enumerate(b_app_row):
-                                use _phone_application_button(b_app, (None, bx, by), coords_to_move)
+                    frame style "phone_main_frame_bottom_frame":
+                        hbox xalign 0.5:
+                            for by, b_app_row in enumerate(phone.application.get_app_page(None)):
+                                for bx, b_app in enumerate(b_app_row):
+                                    use _phone_application_button(b_app, (None, bx, by), coords_to_move)
 
 style phone_main_text is empty:
     font "DejaVuSans.ttf"
