@@ -1,7 +1,7 @@
-Thank you for downloading the Phone+ Addon!
+DDLC Phone+ by CalebthePianist
 
-Current Version: 1.01
-Better EMR Phone Equivalent Version: 3.2.2 (Not released)
+Current Version: 1.1
+Better EMR Phone Equivalent Version: 3.2.2
 
 This tool is an alternate version of Elckarow's "Better EMR Phone", meant to include extra screens and features that you might want to use in your mod.
 If you don't need these extra features, download the original phone.
@@ -37,8 +37,7 @@ That's it! Everything should work as intended. (I hope)
 CREDITS:
 Better EMR Phone © 2022-2024 Elckarow.
 Phone+ Addon Copyright © 2023-2024 CalebthePianist.
-Code adapted from the DDLC Mod Template 2.0 and DDLC Music Player (© 2019-2023 Bronya-Rand), Ren'Py Color Picker by Feniks, and screenshot code by bink on the Ren'Py Forums.
-DDLC emojis are by Team Salvato.
+Code adapted from the DDLC Mod Template 2.0 and DDLC Music Player (© 2019-2024 Bronya-Rand), Ren'Py Color Picker by Feniks, and screenshot code by bink on the Ren'Py Forums.
 Twemoji designs are licensed under CC-BY 4.0.
 Chibi stickers were created by Team Salvato and edited by Leomonade.
 Special thanks to M3rc, Keita, and Elckarow for assistance and help.
