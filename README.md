@@ -1,4 +1,4 @@
-DDLC Phone+ by CalebthePianist
+DDLC Phone+ by CalebthePianist (Original Phone by Elckarow)
 
 Current Version: 1.1
 Better EMR Phone Equivalent Version: 3.2.2

@@ -46,6 +46,8 @@ init -100 python in phone:
     from store import Action, Return, With
     import time
 
+    NoValue = renpy.object.Sentinel("_phone_NoValue")
+
     class PhoneMenu(Action):
         def __init__(self, screen, *args, **kwargs):
             self.screen = screen
@@ -71,18 +73,15 @@ init -100 python in phone:
         global menu
         menu = True
 
-        global _stack_depth
-        first_call = _stack_depth == 0
+        first_call = renpy.context_nesting_level() == 0
 
         needs_rollback = first_call and renpy.game.context().interacting
 
         if needs_rollback:
             renpy.checkpoint()
 
-        renpy.transition(config.enter_transition if first_call else config.intra_transition)
+        renpy.transition(kwargs.pop("_transition", config.enter_transition if first_call else config.intra_transition))
         store._window_hide(None, True)
-
-        _stack_depth += 1
 
         current_screen = get_current_screen()
         set_current_screen(_screen_name)
@@ -92,7 +91,6 @@ init -100 python in phone:
         show_layer_at(current_screen or [])
 
         set_current_screen(current_screen)
-        _stack_depth -= 1
 
         menu = not first_call
 
@@ -101,8 +99,8 @@ init -100 python in phone:
 
         return rv
     
-    def PhoneReturn(value=None):
-        return (Return(value), With(config.exit_transition if _stack_depth == 1 else config.intra_transition))
+    def PhoneReturn(value=None, transition=NoValue):
+        return (Return(value), With(transition if transition is not NoValue else (config.exit_transition if renpy.context_nesting_level() == 1 else config.intra_transition)))
 
 
     store.PhoneReturn = PhoneReturn
@@ -146,7 +144,6 @@ init -100 python in phone:
 # renamed it because why not
 default -999 phone._defaults_ran = phone._id_ran_on_start
 
-default -100 phone._stack_depth = 0
 default -100 phone._current_screen = None
 default -100 pressedhome = False
 
@@ -184,6 +181,9 @@ screen _phone(xpos=0.15, xanchor=0.5, ypos=0.14, yanchor=0.1, horizontal=False):
             xysize (gui.phone_ysize, gui.phone_xsize)
 
         fixed style "empty":
+            at transform:
+                crop (0.0, 0.0, 1.0, 1.0) crop_relative True
+                
             fixed style "empty":
                 if phone.system.at_list: # https://github.com/renpy/renpy/issues/4628
                     at phone.system.at_list
