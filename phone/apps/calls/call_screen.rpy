@@ -10,10 +10,13 @@ screen phone_call(video=False):
     use _phone(xpos=gui.phone_call_xpos, xanchor=0.0):
         add Solid("#302D29")
 
-        if video and is_renpy_version_or_above(7, 6, 0): # _phone_video_call uses the `Layer` displayable
-            use _phone_video_call()
-        else:
-            use _phone_call()
+        # https://github.com/Elckarow/Better-EMR-Phone/issues/14
+        # and 
+        if phone.calls._current_caller is not None:
+            if video and is_renpy_version_or_above(7, 6, 0): # _phone_video_call uses the `Layer` displayable
+                use _phone_video_call()
+            else:
+                use _phone_call()
     
     if not phone.config.quick_menu and quick_menu:
         use quick_menu()

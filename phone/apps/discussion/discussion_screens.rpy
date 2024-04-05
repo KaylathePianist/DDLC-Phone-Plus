@@ -1,15 +1,20 @@
 screen phone_discussion():
+    # 
+    $ has_group_chat = phone.discussion._group_chat is not None
+
     use _phone():
         side "t b c":
             use app_base(action=(SetField(phone.discussion, "_group_chat", None), Function(phone.discussion.audio_messages.reset))):
                 style_prefix "app_base"
 
                 hbox:
-                    add phone.discussion._group_chat.icon at _fits(36) yalign 0.5
-                    text phone.short_name(phone.discussion._group_chat.name, 9)
+                    if has_group_chat:
+                        add phone.discussion._group_chat.icon at _fits(36) yalign 0.5
+                        text phone.short_name(phone.discussion._group_chat.name, 9)
 
-            use _chat_textbox()
-            use _chat_messages()
+            if has_group_chat:
+                use _chat_textbox()
+                use _chat_messages()
 
 
 init -100 python in phone.discussion:
