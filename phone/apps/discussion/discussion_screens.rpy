@@ -1,5 +1,5 @@
 screen phone_discussion():
-    # 
+    # https://github.com/Elckarow/Better-EMR-Phone/commit/b8580f4918ab011c3789058401f57daeda65e8f0
     $ has_group_chat = phone.discussion._group_chat is not None
 
     use _phone():

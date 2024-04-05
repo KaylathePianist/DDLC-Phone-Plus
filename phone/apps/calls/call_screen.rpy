@@ -11,7 +11,7 @@ screen phone_call(video=False):
         add Solid("#302D29")
 
         # https://github.com/Elckarow/Better-EMR-Phone/issues/14
-        # and 
+        # and https://github.com/Elckarow/Better-EMR-Phone/commit/b8580f4918ab011c3789058401f57daeda65e8f0
         if phone.calls._current_caller is not None:
             if video and is_renpy_version_or_above(7, 6, 0): # _phone_video_call uses the `Layer` displayable
                 use _phone_video_call()
