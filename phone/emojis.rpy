@@ -1,5 +1,5 @@
 init -150 python in phone.emojis:
-    from renpy.store import store, Transform, phone
+    from renpy.store import store, Transform, phone, config as renpy_config
     from store.phone import config
     import os
     _constant = True
@@ -20,7 +20,7 @@ init -150 python in phone.emojis:
     def get(name):
         return _emojis[name]
     
-    store.config.self_closing_custom_text_tags["emoji"] = \
+    renpy_config.self_closing_custom_text_tags["emoji"] = \
         lambda tag, name: [
             (renpy.TEXT_DISPLAYABLE, Transform(get(name), subpixel=True, ysize=1.0, fit="contain"))
         ]
@@ -37,13 +37,13 @@ init 1000 python hide in phone.emojis:
         emoji_base_path = phone.asset("emojis")
 
         try:
-            for emoji in os.listdir(phone.path_join(store.config.basedir, "game", emoji_base_path)):
+            for emoji in os.listdir(phone.path_join(renpy_config.basedir, "game", emoji_base_path)):
                 stuff = emoji.split(".")
                 
                 if len(stuff) != 2: continue
                 name, extension = stuff
 
-                if extension.lower() not in ("png", "jpg", "jpeg", "svg"):
+                if extension.lower() not in renpy_config.image_extensions:
                     continue
 
                 add(name, phone.path_join(emoji_base_path, emoji))
