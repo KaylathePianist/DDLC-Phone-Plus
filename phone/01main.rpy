@@ -124,7 +124,7 @@ init -100 python in phone:
     import os
     @renpy.pure
     def path_join(*paths):
-        return os.path.join(*paths).replace("\\", "/")
+        return os.path.join(*paths)
 
     @renpy.pure
     def asset(path):
