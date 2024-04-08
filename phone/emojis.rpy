@@ -40,7 +40,7 @@ init 1000 python hide in phone.emojis:
             for emoji in os.listdir(phone.path_join(renpy_config.basedir, "game", emoji_base_path)):
                 path = phone.path_join(emoji_base_path, emoji)
 
-                if os.path.isdir(path):
+                if os.path.isdir(phone.path_join(renpy_config.basedir, path)):
                     continue
 
                 name, extension = os.path.splitext(emoji)
