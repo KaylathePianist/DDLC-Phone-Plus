@@ -38,15 +38,17 @@ init 1000 python hide in phone.emojis:
 
         try:
             for emoji in os.listdir(phone.path_join(renpy_config.basedir, "game", emoji_base_path)):
-                stuff = emoji.split(".")
-                
-                if len(stuff) != 2: continue
-                name, extension = stuff
+                path = phone.path_join(emoji_base_path, emoji)
 
+                if os.path.isdir(path):
+                    continue
+
+                name, extension = os.path.splitext(emoji)
+                
                 if extension.lower() not in renpy_config.image_extensions:
                     continue
 
-                add(name, phone.path_join(emoji_base_path, emoji))
+                add(name, path)
 
         except OSError:
             pass
