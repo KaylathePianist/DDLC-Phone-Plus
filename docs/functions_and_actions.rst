@@ -19,7 +19,7 @@ Utility Functions
     Shortens the string ``s`` after translating it. The string is sliced to ``length - 3`` and ``"..."`` is appended to it.
 
 ``def path_join(*args)``
-    Computes *os.path.join(\*args)*
+    A wrapper around ``os.path.join``, replacing backslashes if needed.
 
 ``def asset(path)``
     Computes *path_join(phone.config.basedir, path)*

@@ -124,7 +124,10 @@ init -100 python in phone:
     import os
     @renpy.pure
     def path_join(*paths):
-        return os.path.join(*paths)
+        rv = os.path.join(*paths)
+        if renpy.windows:
+            rv = rv.replace("\\", "/")
+        return rv
 
     @renpy.pure
     def asset(path):
