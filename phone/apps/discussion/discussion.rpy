@@ -2,7 +2,6 @@ init -100 python in phone.discussion:
     from renpy import store
     from store import ui, pause, phone
     from store.phone import config, show_layer_at, set_current_screen, format_date, format_time, emojis
-    from store.phone.discussion import audio_messages
     import datetime
 
     def sort_messages(key):
@@ -11,8 +10,9 @@ init -100 python in phone.discussion:
     def _check_for_tags(s):
         if renpy.filter_text_tags(s, allow=config.message_text_tags) != s:
             raise ValueError("only the following text tags are allowed:\n{}\n\ntext: '{}'".format("\n".join(config.message_text_tags), s))
-
-    def discussion(gc):
+    
+    
+    def set_up_group_chat(gc):
         global _group_chat
 
         if gc is None:
@@ -26,12 +26,16 @@ init -100 python in phone.discussion:
         if not gc._characters:
             raise Exception("group chat '{}' has no characters".format(gc.name))
         
-        store._window_hide()
         
         _group_chat = gc
         _group_chat.unread = False
 
         _yadjustment.value = float("inf")
+        
+    def discussion(gc):
+        set_up_group_chat(gc)
+
+        store._window_hide()
 
         set_current_screen("phone_discussionex")
         show_layer_at("phone_discussionex")
@@ -53,7 +57,6 @@ init -100 python in phone.discussion:
             _group_chat.clear()
             
         _group_chat = None
-        phone.discussion.audio_messages.reset()
         show_layer_at([], reset=True)
         renpy.hide_screen("phone_discussionex")
         renpy.with_statement(config.exit_transition)

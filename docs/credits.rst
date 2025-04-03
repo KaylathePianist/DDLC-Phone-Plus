@@ -1,16 +1,18 @@
-Credits
-=======
 
 I'd like to thank to following people for their contributions:
 
 * silversnow\_\_ (MC's icon)
 * lameman (Quick menu icons)
 * negative.two (Shader code for the ``CircleDisplayable`` displayable)
-* calebthepianist (Renaming all the twemojis)
+* kaylathepianist (Renaming all the twemojis)
 
 as well as the project's contributors on GitHub:
 
-* Galo223344 (transient group chats)
+* Galo223344
+* MapMappening
+* VodkaBro
+* avocolado
+* MDHtrappy
 
 Various ressources used:
 

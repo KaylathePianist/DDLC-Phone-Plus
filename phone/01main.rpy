@@ -11,7 +11,7 @@ init -150 python in phone:
             return {k: f() for k, f in config.data.items()}
             
     renpy.music.register_channel("phone_audio_message", mixer="phone", loop=False)
-    renpy.music.register_channel("phone_music", mixer="phone", loop=False)
+    renpy.music.register_channel("phone_music", mixer="phone", loop=True)
 
     def set_current_screen(_screen_name):
         global _current_screen; _current_screen = _screen_name
@@ -41,6 +41,8 @@ transform -150 _yfits(size):
 default -150 phone.data = collections.defaultdict(
     phone._Data()
 )
+
+default -100 phone.menu = False
 
 init -100 python in phone:
     from store import Action, Return, With
@@ -124,7 +126,10 @@ init -100 python in phone:
     import os
     @renpy.pure
     def path_join(*paths):
-        return os.path.join(*paths).replace("\\", "/")
+        rv = os.path.join(*paths)
+        if renpy.windows:
+            rv = rv.replace("\\", "/")
+        return rv
 
     @renpy.pure
     def asset(path):

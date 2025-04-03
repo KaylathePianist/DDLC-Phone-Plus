@@ -2,17 +2,22 @@ screen phone_discussionex(xpos=0.15):
     use phone_discussion(xpos)
 
 screen phone_discussion(xpos=0.15):
+    # https://github.com/Elckarow/Better-EMR-Phone/commit/b8580f4918ab011c3789058401f57daeda65e8f0
+    $ has_group_chat = phone.discussion._group_chat is not None
+    
     use _phone(xpos):
         side "t b c":
             use app_base(action=(SetField(phone.discussion, "_group_chat", None), Function(phone.discussion.audio_messages.reset))):
                 style_prefix "app_base"
 
                 hbox:
-                    add phone.discussion._group_chat.icon at _fits(36) yalign 0.5
-                    text phone.short_name(phone.discussion._group_chat.name, 9)
+                    if has_group_chat:
+                        add phone.discussion._group_chat.icon at _fits(36) yalign 0.5
+                        text phone.short_name(phone.discussion._group_chat.name, 9)
 
-            use _chat_textbox()
-            use _chat_messages()
+            if has_group_chat:
+                use _chat_textbox()
+                use _chat_messages()
 
 
 init -100 python in phone.discussion:

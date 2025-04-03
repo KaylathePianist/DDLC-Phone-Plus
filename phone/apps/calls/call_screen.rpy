@@ -7,13 +7,16 @@ init -100 python in phone.calls:
 default phone.calls._call_time_st = 0.0
 
 screen phone_call(video=False):
-    use _phone():
+    use _phone(xpos=gui.phone_call_xpos, xanchor=0.0):
         add Solid("#302D29")
 
-        if video and is_renpy_version_or_above(7, 6, 0): # _phone_video_call uses the `Layer` displayable
-            use _phone_video_call()
-        else:
-            use _phone_call()
+        # https://github.com/Elckarow/Better-EMR-Phone/issues/14
+        # and https://github.com/Elckarow/Better-EMR-Phone/commit/b8580f4918ab011c3789058401f57daeda65e8f0
+        if phone.calls._current_caller is not None:
+            if video and is_renpy_version_or_above(7, 6, 0): # _phone_video_call uses the `Layer` displayable
+                use _phone_video_call()
+            else:
+                use _phone_call()
     
     if not phone.config.quick_menu and quick_menu:
         use quick_menu()
@@ -32,7 +35,7 @@ screen _phone_call():
         frame style "empty" xalign 0.5 ypos 0.45:
             use phone_quick_menu()
 
-    add phone.config.basedir + "hang_up.png":
+    add phone.asset("hang_up.png"):
         subpixel True xysize (63, 63)
         xalign 0.5 ypos 0.8
 
@@ -47,7 +50,7 @@ style phone_call_text is empty:
     outlines [ ]
     line_spacing 0
     size 24
-    font phone.config.basedir + "Aller_Rg.ttf"
+    font phone.asset("Aller_Rg.ttf")
     hyperlink_functions hyperlink_functions_style("phone_call_text_hyperlink")
 
 style phone_call_text_hyperlink is phone_call_text:
