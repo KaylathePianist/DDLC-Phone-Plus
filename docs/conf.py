@@ -17,12 +17,12 @@ sys.path.append(os.path.abspath('.'))
 
 # -- Project information -----------------------------------------------------
 
-project = 'Better EMR Phone Documentation'
-copyright = '2023, Elckarow'
-author = 'Elckarow'
+project = 'PhonePlus Documentation'
+copyright = '2025, Elckarow, KaylathePianist'
+author = 'Elckarow, KaylathePianist'
 
 # The full version, including alpha/beta/rc tags
-release = 'v3.2.0'
+release = 'v1.1'
 
 # -- General configuration ---------------------------------------------------
 
@@ -63,8 +63,8 @@ html_static_path = ['_static']
 
 html_context = {
   'display_github': True,
-  'github_user': 'Elckarow',
-  'github_repo': 'Better-EMR-Phone',
+  'github_user': 'KaylathePianist',
+  'github_repo': 'DDLC-Phone-Plus',
 }
 
 html_theme = "sphinx_rtd_theme"

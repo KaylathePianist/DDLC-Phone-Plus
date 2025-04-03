@@ -51,6 +51,10 @@ Functions
 ``def audio(sender, audio, time=2.0, delay=None)``
     Sends an audio by the ``*character*`` ``sender`` to the current group chat. ``time`` is the time the audio is being sent for.
 
+``def sticker(sender, sticker, time=2.0, delay=None)``
+    Sends an sticker by the ``*character*`` ``sender`` to the current group chat. ``time`` is the time the image is being sent for.
+    The python equivalent of the ``sticker`` discussion statement.
+
 ``def register_message(group, sender, text)``
     Saves a message sent by the ``*character*`` ``sender`` in the ``*group chat*`` ``group``.
     This is called automatically by the ``phone.discussion.message`` function.
@@ -75,6 +79,11 @@ Functions
     Saves an audio sent by the ``*character*`` ``sender`` in the ``*group chat*`` ``group``.
     This is called automatically by the ``phone.discussion.audio`` function.
     The python equivalent of the ``audio`` register statement.
+
+``def register_sticker(group, sender, sticker)``
+    Saves an sticker sent by the ``*character*`` ``sender`` in the ``*group chat*`` ``group``.
+    This is called automatically by the ``phone.discussion.sticker`` function.
+    The python equivalent of the ``sticker`` register statement.
 
 ``def sort_messages(key)``
     Sorts the group chats of the ``*character*`` ``key`` in descending order according to their last registered date.
@@ -143,6 +152,12 @@ The discussion statements
     
     * ``pause``
         Same as the regular ``pause`` statement.
+
+    * ``sticker``
+        The equivalent of the ``phone.discussion.sticker`` function.
+        It expects a ``*character*`` and a simple expression (the sticker name).
+        It accepts the ``time`` property (defaults to ``2.0``), which is the time the sticker is being sent for.
+        A sticker is basically just an image that cannot be saved or made larger.
 
     If no block is given, it behaves as if a single ``pass`` statement was given.
 

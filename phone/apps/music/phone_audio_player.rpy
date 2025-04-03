@@ -11,18 +11,10 @@ image PhonereadablePos = DynamicDisplayable(ost_info.music_pos)
 image PhonereadableDur = DynamicDisplayable(ost_info.music_dur)
 image PhonetitleName = DynamicDisplayable(ost_info.dynamic_title_text)
 
-image PhoneauthorName = DynamicDisplayable(renpy.curry(ost_info.dynamic_author_text)(If(
-    renpy.android and renpy.version_tuple == (6, 99, 12, 4, 2187), 
-        "r6_android_song_author_text", 
-        "phone_music_player_text")
-        )
-)  
-image PhonealbumName = DynamicDisplayable(renpy.curry(ost_info.dynamic_album_text)(If(
-        renpy.android and renpy.version_tuple == (6, 99, 12, 4, 2187), 
-        "r6_android_song_author_text", 
-        "phone_music_player_text")
-    )
-)
+image PhoneauthorName = DynamicDisplayable(ost_info.dynamic_author_text)
+
+image PhonealbumName = DynamicDisplayable(ost_info.dynamic_album_text)
+
 image PhonecoverArt:
     DynamicDisplayable(ost_info.refresh_cover_data)
 

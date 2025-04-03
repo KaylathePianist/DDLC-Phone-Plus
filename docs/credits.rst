@@ -1,3 +1,5 @@
+Credits
+=======
 
 I'd like to thank to following people for their contributions:
 

@@ -26,3 +26,7 @@ Built-in Screens
 ``phone_discussion()`` *(used during phone discussions)*
 
 .. image:: assets/phone_discussion_screen.png
+
+``phone_settings()``
+
+.. image:: assets/phone_settings_screen.png

@@ -5,6 +5,7 @@ screens.rpy
 options.rpy
 script.rpy
 
+docs/build/
 saves/
 tl/
 cache/

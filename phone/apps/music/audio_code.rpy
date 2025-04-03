@@ -166,7 +166,7 @@ init python:
                     (self.get_artist()[:42] + "...")
                     if len(self.get_artist()) >= 45
                     else self.get_artist()
-                ), style=style_name, substitute=False
+                ), style="phone_music_player_text", substitute=False
             ), 0.20
 
         def phone_dynamic_author_text(self, st, at):
@@ -187,7 +187,7 @@ init python:
                     (self.get_album()[:42] + "...")
                     if len(self.get_album()) >= 45
                     else self.get_album()
-                ), style=style_name, substitute=False
+                ), style="phone_music_player_text", substitute=False
             ), 0.20
 
     ost_info = OSTPlayerInfo()
