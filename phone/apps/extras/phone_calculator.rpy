@@ -83,11 +83,9 @@ init python in calculator:
         global number1
         global number2
         global equation
-        if number2 == "":
-            if whichfunction != "":
-                equation = "error"
-                renpy.restart_interaction()
-        number1 = float(number1)
+        global number1temp
+        try: number1 = float(number1)
+        except: number1 = 0.0
         if whichfunction != "":
             if number2 == "":
                 equation = "error"
@@ -101,30 +99,25 @@ init python in calculator:
             global number2
             global whichfunction
             global pressedequals
-            result = None
-            # eval function evaluate the expression 
-            # and str function convert the result 
-            # into string 
-            if whichfunction == "plus":
-                equation = str(number1+number2)
-            elif whichfunction == "minus":
-                equation = str(number1-number2)
-            elif whichfunction == "times":
-                equation = str(number1*number2)
-            elif whichfunction == "divide":
-                equation = str(number1/number2)
-            else:
-                equation = str(float(equation))
-            
-            result = equation.endswith(".0")
-            if result == True:
-                equation.strip(".0")
 
-            number1 = float(equation)
+            if whichfunction == "plus":
+                equation = number1+number2
+            elif whichfunction == "minus":
+                equation = number1-number2
+            elif whichfunction == "times":
+                equation = number1*number2
+            elif whichfunction == "divide":
+                equation = number1/number2
+            else:
+                if equation != "":
+                    equation = number1
+                else:
+                    equation = 0       
+            equation = '{0:g}'.format(equation)
+            number1 = equation
             pressedequals = True
             whichfunction = ""
             number2 = ""
-            number1 = equation
             renpy.restart_interaction()
 
 
@@ -136,10 +129,12 @@ init python in calculator:
             global number1
             global number2
             global number1temp
+            global whichfunction
             number1 = ""
             number2 = ""
             number1temp = ""
             equation = "error"
+            whichfunction = ""
 
             renpy.restart_interaction()
 
@@ -166,6 +161,10 @@ style phone_number_text is phone_confirm_text:
 
 image numberdisplay:
     DynamicDisplayable(equation_text)
+
+init python:
+    config.keymap['button_select'].remove('K_KP_ENTER')
+    config.keymap['button_select'].remove('K_RETURN')
 
 screen phone_calculator():
     use _phone():
@@ -196,32 +195,22 @@ screen phone_calculator():
                                 xsize 225
                                 ysize 70
                                 text "Clear" align (0.5, 0.5)
-                                if persistent.darkmode:
-                                    idle_background RoundedFrame("#525252", radius=(35, 35, 35, 35))
-                                    hover_background RoundedFrame("#7e7e7e", radius=(35, 35, 35, 35))
-                                else:
-                                    idle_background RoundedFrame("#cdcdcd", radius=(35, 35, 35, 35))
-                                    hover_background RoundedFrame("#9e9e9e", radius=(35, 35, 35, 35))
+                                idle_background "calccirclebuttonidle"
+                                hover_background "calccirclebuttonhover"
                                 action Function(calculator.clear)
+                                keysym ["K_BACKSPACE", "K_DELETE"]
                             button:
                                 xsize 70
                                 ysize 70
                                 text "/" align (0.5, 0.5)
-                                if persistent.darkmode:
-                                    if whichfunction2 == "divide":
-                                        idle_background RoundedFrame("#7e7e7e", radius=(35, 35, 35, 35))
-                                        hover_background RoundedFrame("#aaaaaa", radius=(35, 35, 35, 35))
-                                    else:
-                                        idle_background RoundedFrame("#525252", radius=(35, 35, 35, 35))
-                                        hover_background RoundedFrame("#7e7e7e", radius=(35, 35, 35, 35))
+                                if whichfunction2 == "divide":
+                                    idle_background "calcbuttonidle"
+                                    hover_background "calcbuttonhover"
                                 else:
-                                    if whichfunction2 == "divide":
-                                        idle_background RoundedFrame("#9e9e9e", radius=(35, 35, 35, 35))
-                                        hover_background RoundedFrame("#838383", radius=(35, 35, 35, 35))
-                                    else:
-                                        idle_background RoundedFrame("#cdcdcd", radius=(35, 35, 35, 35))
-                                        hover_background RoundedFrame("#9e9e9e", radius=(35, 35, 35, 35))
+                                    idle_background "calccirclebuttonidle"
+                                    hover_background "calccirclebuttonhover"
                                 action [Function(calculator.divide), SetVariable("whichfunction2", "divide")]
+                                keysym ["K_KP_DIVIDE", "K_SLASH"]
                         hbox:
                             xalign 0.5
                             spacing 10
@@ -229,54 +218,38 @@ screen phone_calculator():
                                 xsize 70
                                 ysize 70
                                 text "7" align (0.5, 0.5)
-                                if persistent.darkmode:
-                                    idle_background RoundedFrame("#525252", radius=(35, 35, 35, 35))
-                                    hover_background RoundedFrame("#7e7e7e", radius=(35, 35, 35, 35))
-                                else:
-                                    idle_background RoundedFrame("#cdcdcd", radius=(35, 35, 35, 35))
-                                    hover_background RoundedFrame("#9e9e9e", radius=(35, 35, 35, 35))
+                                idle_background "calccirclebuttonidle"
+                                hover_background "calccirclebuttonhover"
                                 action Function(calculator.press, 7)
+                                keysym ["K_7", "K_KP7"]
                             button:
                                 xsize 70
                                 ysize 70
                                 text "8" align (0.5, 0.5)
-                                if persistent.darkmode:
-                                    idle_background RoundedFrame("#525252", radius=(35, 35, 35, 35))
-                                    hover_background RoundedFrame("#7e7e7e", radius=(35, 35, 35, 35))
-                                else:
-                                    idle_background RoundedFrame("#cdcdcd", radius=(35, 35, 35, 35))
-                                    hover_background RoundedFrame("#9e9e9e", radius=(35, 35, 35, 35))
+                                idle_background "calccirclebuttonidle"
+                                hover_background "calccirclebuttonhover"
                                 action Function(calculator.press, 8)
+                                keysym ["K_8", "K_KP8"]
                             button:
                                 xsize 70
                                 ysize 70
                                 text "9" align (0.5, 0.5)
-                                if persistent.darkmode:
-                                    idle_background RoundedFrame("#525252", radius=(35, 35, 35, 35))
-                                    hover_background RoundedFrame("#7e7e7e", radius=(35, 35, 35, 35))
-                                else:
-                                    idle_background RoundedFrame("#cdcdcd", radius=(35, 35, 35, 35))
-                                    hover_background RoundedFrame("#9e9e9e", radius=(35, 35, 35, 35))
+                                idle_background "calccirclebuttonidle"
+                                hover_background "calccirclebuttonhover"
                                 action Function(calculator.press, 9)
+                                keysym ["K_9", "K_KP9"]
                             button:
                                 xsize 70
                                 ysize 70
                                 text "x" align (0.5, 0.5)
-                                if persistent.darkmode:
-                                    if whichfunction2 == "times":
-                                        idle_background RoundedFrame("#7e7e7e", radius=(35, 35, 35, 35))
-                                        hover_background RoundedFrame("#aaaaaa", radius=(35, 35, 35, 35))
-                                    else:
-                                        idle_background RoundedFrame("#525252", radius=(35, 35, 35, 35))
-                                        hover_background RoundedFrame("#7e7e7e", radius=(35, 35, 35, 35))
+                                if whichfunction2 == "times":
+                                    idle_background "calcbuttonidle"
+                                    hover_background "calcbuttonhover"
                                 else:
-                                    if whichfunction2 == "times":
-                                        idle_background RoundedFrame("#9e9e9e", radius=(35, 35, 35, 35))
-                                        hover_background RoundedFrame("#838383", radius=(35, 35, 35, 35))
-                                    else:
-                                        idle_background RoundedFrame("#cdcdcd", radius=(35, 35, 35, 35))
-                                        hover_background RoundedFrame("#9e9e9e", radius=(35, 35, 35, 35))
+                                    idle_background "calccirclebuttonidle"
+                                    hover_background "calccirclebuttonhover"
                                 action [Function(calculator.times), SetVariable("whichfunction2", "times")]
+                                keysym ["K_ASTERISK", "K_KP_MULTIPLY"]
                         hbox:
                             xalign 0.5
                             spacing 10
@@ -284,54 +257,38 @@ screen phone_calculator():
                                 xsize 70
                                 ysize 70
                                 text "4" align (0.5, 0.5)
-                                if persistent.darkmode:
-                                    idle_background RoundedFrame("#525252", radius=(35, 35, 35, 35))
-                                    hover_background RoundedFrame("#7e7e7e", radius=(35, 35, 35, 35))
-                                else:
-                                    idle_background RoundedFrame("#cdcdcd", radius=(35, 35, 35, 35))
-                                    hover_background RoundedFrame("#9e9e9e", radius=(35, 35, 35, 35))
+                                idle_background "calccirclebuttonidle"
+                                hover_background "calccirclebuttonhover"
                                 action Function(calculator.press, 4)
+                                keysym ["K_4", "K_KP4"]
                             button:
                                 xsize 70
                                 ysize 70
                                 text "5" align (0.5, 0.5)
-                                if persistent.darkmode:
-                                    idle_background RoundedFrame("#525252", radius=(35, 35, 35, 35))
-                                    hover_background RoundedFrame("#7e7e7e", radius=(35, 35, 35, 35))
-                                else:
-                                    idle_background RoundedFrame("#cdcdcd", radius=(35, 35, 35, 35))
-                                    hover_background RoundedFrame("#9e9e9e", radius=(35, 35, 35, 35))
+                                idle_background "calccirclebuttonidle"
+                                hover_background "calccirclebuttonhover"
                                 action Function(calculator.press, 5)
+                                keysym ["K_5", "K_KP5"]
                             button:
                                 xsize 70
                                 ysize 70
                                 text "6" align (0.5, 0.5)
-                                if persistent.darkmode:
-                                    idle_background RoundedFrame("#525252", radius=(35, 35, 35, 35))
-                                    hover_background RoundedFrame("#7e7e7e", radius=(35, 35, 35, 35))
-                                else:
-                                    idle_background RoundedFrame("#cdcdcd", radius=(35, 35, 35, 35))
-                                    hover_background RoundedFrame("#9e9e9e", radius=(35, 35, 35, 35))
+                                idle_background "calccirclebuttonidle"
+                                hover_background "calccirclebuttonhover"
                                 action Function(calculator.press, 6)
+                                keysym ["K_6", "K_KP6"]
                             button:
                                 xsize 70
                                 ysize 70
                                 text "+" align (0.5, 0.5)
-                                if persistent.darkmode:
-                                    if whichfunction2 == "plus":
-                                        idle_background RoundedFrame("#7e7e7e", radius=(35, 35, 35, 35))
-                                        hover_background RoundedFrame("#aaaaaa", radius=(35, 35, 35, 35))
-                                    else:
-                                        idle_background RoundedFrame("#525252", radius=(35, 35, 35, 35))
-                                        hover_background RoundedFrame("#7e7e7e", radius=(35, 35, 35, 35))
+                                if whichfunction2 == "plus":
+                                    idle_background "calcbuttonidle"
+                                    hover_background "calcbuttonhover"
                                 else:
-                                    if whichfunction2 == "plus":
-                                        idle_background RoundedFrame("#9e9e9e", radius=(35, 35, 35, 35))
-                                        hover_background RoundedFrame("#838383", radius=(35, 35, 35, 35))
-                                    else:
-                                        idle_background RoundedFrame("#cdcdcd", radius=(35, 35, 35, 35))
-                                        hover_background RoundedFrame("#9e9e9e", radius=(35, 35, 35, 35))
+                                    idle_background "calccirclebuttonidle"
+                                    hover_background "calccirclebuttonhover"
                                 action [Function(calculator.plus), SetVariable("whichfunction2", "plus")]
+                                keysym ["K_PLUS", "K_KP_PLUS"]
                         hbox:
                             xalign 0.5
                             spacing 10
@@ -339,54 +296,38 @@ screen phone_calculator():
                                 xsize 70
                                 ysize 70
                                 text "1" align (0.5, 0.5)
-                                if persistent.darkmode:
-                                    idle_background RoundedFrame("#525252", radius=(35, 35, 35, 35))
-                                    hover_background RoundedFrame("#7e7e7e", radius=(35, 35, 35, 35))
-                                else:
-                                    idle_background RoundedFrame("#cdcdcd", radius=(35, 35, 35, 35))
-                                    hover_background RoundedFrame("#9e9e9e", radius=(35, 35, 35, 35))
+                                idle_background "calccirclebuttonidle"
+                                hover_background "calccirclebuttonhover"
                                 action Function(calculator.press, 1)
+                                keysym ["K_1", "K_KP1"]
                             button:
                                 xsize 70
                                 ysize 70
                                 text "2" align (0.5, 0.5)
-                                if persistent.darkmode:
-                                    idle_background RoundedFrame("#525252", radius=(35, 35, 35, 35))
-                                    hover_background RoundedFrame("#7e7e7e", radius=(35, 35, 35, 35))
-                                else:
-                                    idle_background RoundedFrame("#cdcdcd", radius=(35, 35, 35, 35))
-                                    hover_background RoundedFrame("#9e9e9e", radius=(35, 35, 35, 35))
+                                idle_background "calccirclebuttonidle"
+                                hover_background "calccirclebuttonhover"
                                 action Function(calculator.press, 2)
+                                keysym ["K_2", "K_KP2"]
                             button:
                                 xsize 70
                                 ysize 70
                                 text "3" align (0.5, 0.5)
-                                if persistent.darkmode:
-                                    idle_background RoundedFrame("#525252", radius=(35, 35, 35, 35))
-                                    hover_background RoundedFrame("#7e7e7e", radius=(35, 35, 35, 35))
-                                else:
-                                    idle_background RoundedFrame("#cdcdcd", radius=(35, 35, 35, 35))
-                                    hover_background RoundedFrame("#9e9e9e", radius=(35, 35, 35, 35))
+                                idle_background "calccirclebuttonidle"
+                                hover_background "calccirclebuttonhover"
                                 action Function(calculator.press, 3)
+                                keysym ["K_3", "K_KP3"]
                             button:
                                 xsize 70
                                 ysize 70
                                 text "-" align (0.5, 0.5)
-                                if persistent.darkmode:
-                                    if whichfunction2 == "minus":
-                                        idle_background RoundedFrame("#7e7e7e", radius=(35, 35, 35, 35))
-                                        hover_background RoundedFrame("#aaaaaa", radius=(35, 35, 35, 35))
-                                    else:
-                                        idle_background RoundedFrame("#525252", radius=(35, 35, 35, 35))
-                                        hover_background RoundedFrame("#7e7e7e", radius=(35, 35, 35, 35))
+                                if whichfunction2 == "minus":
+                                    idle_background "calcbuttonidle"
+                                    hover_background "calcbuttonhover"
                                 else:
-                                    if whichfunction2 == "minus":
-                                        idle_background RoundedFrame("#9e9e9e", radius=(35, 35, 35, 35))
-                                        hover_background RoundedFrame("#838383", radius=(35, 35, 35, 35))
-                                    else:
-                                        idle_background RoundedFrame("#cdcdcd", radius=(35, 35, 35, 35))
-                                        hover_background RoundedFrame("#9e9e9e", radius=(35, 35, 35, 35))
+                                    idle_background "calccirclebuttonidle"
+                                    hover_background "calccirclebuttonhover"
                                 action [Function(calculator.minus), SetVariable("whichfunction2", "minus")]
+                                keysym ["K_MINUS", "K_KP_MINUS"]
                         hbox:
                             xalign 0.5
                             spacing 10
@@ -394,35 +335,42 @@ screen phone_calculator():
                                 xsize 145
                                 ysize 70
                                 text "0" align (0.5, 0.5)
-                                if persistent.darkmode:
-                                    idle_background RoundedFrame("#525252", radius=(35, 35, 35, 35))
-                                    hover_background RoundedFrame("#7e7e7e", radius=(35, 35, 35, 35))
-                                else:
-                                    idle_background RoundedFrame("#cdcdcd", radius=(35, 35, 35, 35))
-                                    hover_background RoundedFrame("#9e9e9e", radius=(35, 35, 35, 35))
+                                idle_background "calccirclebuttonidle"
+                                hover_background "calccirclebuttonhover"
                                 action Function(calculator.press, 0)
+                                keysym ["K_0", "K_KP_0"]
                             button:
                                 xsize 70
                                 ysize 70
                                 text "." align (0.5, 0.5)
-                                if persistent.darkmode:
-                                    idle_background RoundedFrame("#525252", radius=(35, 35, 35, 35))
-                                    hover_background RoundedFrame("#7e7e7e", radius=(35, 35, 35, 35))
-                                else:
-                                    idle_background RoundedFrame("#cdcdcd", radius=(35, 35, 35, 35))
-                                    hover_background RoundedFrame("#9e9e9e", radius=(35, 35, 35, 35))
+                                idle_background "calccirclebuttonidle"
+                                hover_background "calccirclebuttonhover"
                                 action Function(calculator.press, ".")
+                                keysym ["K_PERIOD", "K_KP_PERIOD"]
                             button:
                                 xsize 70
                                 ysize 70
                                 text "=" align (0.5, 0.5)
-                                if persistent.darkmode:
-                                    idle_background RoundedFrame("#525252", radius=(35, 35, 35, 35))
-                                    hover_background RoundedFrame("#7e7e7e", radius=(35, 35, 35, 35))
-                                else:
-                                    idle_background RoundedFrame("#cdcdcd", radius=(35, 35, 35, 35))
-                                    hover_background RoundedFrame("#9e9e9e", radius=(35, 35, 35, 35))
+                                idle_background "calccirclebuttonidle"
+                                hover_background "calccirclebuttonhover"
                                 action [Function(calculator.equalpress), SetVariable("whichfunction2", "")]
+                                keysym ["K_EQUALS", "K_KP_EQUALS", "K_RETURN", "K_KP_ENTER"]
+
+image calccirclebuttonidle = ConditionSwitch(
+    "darkmode", RoundedFrame("#525252", radius=35),
+    "True", RoundedFrame("#cdcdcd", radius=35))
+
+image calccirclebuttonhover = ConditionSwitch(
+    "darkmode", RoundedFrame("#7e7e7e", radius=35),
+    "True", RoundedFrame("#9e9e9e", radius=35))
+
+image calcbuttonidle = ConditionSwitch(
+    "darkmode", RoundedFrame("#7e7e7e", radius=35),
+    "True", RoundedFrame("#9e9e9e", radius=35))
+
+image calcbuttonhover = ConditionSwitch(
+    "darkmode", RoundedFrame("#aaaaaa", radius=35),
+    "True", RoundedFrame("#838383", radius=35))
 
 style phone_calculator is phone_confirm
 
